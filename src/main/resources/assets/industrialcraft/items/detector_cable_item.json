@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "industrialcraft:item/detector_cable_item"
+  }
+}

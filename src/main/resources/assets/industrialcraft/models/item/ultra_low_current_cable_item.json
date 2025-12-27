@@ -1,0 +1,17 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "industrialcraft:item/cable/tin_cable_0"
+  },
+  "display": {
+    "gui": {
+      "scale": [0.9, 1.5, 1.0]
+    },
+    "ground": {
+      "scale": [0.9, 1.5, 1.0]
+    },
+    "fixed": {
+      "scale": [0.9, 1.5, 1.0]
+    }
+  }
+}

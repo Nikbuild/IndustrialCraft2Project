@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:block/block",
+  "ambientocclusion": false,
+  "render_type": "minecraft:cutout_mipped",
+  "textures": {
+    "all": "industrialcraft:block/cable/gold_cable_insulated",
+    "particle": "industrialcraft:block/cable/gold_cable_insulated"
+  },
+  "elements": [
+    {
+      "from": [0, 5.5, 5.5],
+      "to":   [5.5, 10.5, 10.5],
+      "faces": {
+        "north": { "texture": "#all" },
+        "south": { "texture": "#all" },
+        "west":  { "texture": "#all" },
+        "east":  { "texture": "#all" },
+        "up":    { "texture": "#all" },
+        "down":  { "texture": "#all" }
+      }
+    }
+  ]
+}

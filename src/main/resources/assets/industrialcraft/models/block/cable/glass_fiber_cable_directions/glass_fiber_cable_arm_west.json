@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:block/block",
+  "ambientocclusion": false,
+  "render_type": "minecraft:cutout_mipped",
+  "textures": {
+    "all": "industrialcraft:block/cable/glass_fiber_cable",
+    "particle": "industrialcraft:block/cable/glass_fiber_cable"
+  },
+  "elements": [
+    {
+      "from": [0, 6, 6],
+      "to":   [6, 10, 10],
+      "faces": {
+        "north": { "texture": "#all" },
+        "south": { "texture": "#all" },
+        "west":  { "texture": "#all" },
+        "east":  { "texture": "#all" },
+        "up":    { "texture": "#all" },
+        "down":  { "texture": "#all" }
+      }
+    }
+  ]
+}

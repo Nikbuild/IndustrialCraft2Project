@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "industrialcraft:item/battery/energy_crystal_0"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "industrialcraft:charge": 0.25
+      },
+      "model": "industrialcraft:item/energy_crystal_1"
+    },
+    {
+      "predicate": {
+        "industrialcraft:charge": 0.5
+      },
+      "model": "industrialcraft:item/energy_crystal_2"
+    },
+    {
+      "predicate": {
+        "industrialcraft:charge": 0.75
+      },
+      "model": "industrialcraft:item/energy_crystal_3"
+    },
+    {
+      "predicate": {
+        "industrialcraft:charge": 1.0
+      },
+      "model": "industrialcraft:item/energy_crystal_4"
+    }
+  ]
+}

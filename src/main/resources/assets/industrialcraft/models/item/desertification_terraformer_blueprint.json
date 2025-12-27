@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "industrialcraft:item/misc/desertification_terraformer_blueprint"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:block/block",
+  "ambientocclusion": false,
+  "render_type": "minecraft:cutout_mipped",
+  "textures": {
+    "all": "industrialcraft:block/cable/high_voltage_cable_quadruple_insulated",
+    "particle": "industrialcraft:block/cable/high_voltage_cable_quadruple_insulated"
+  },
+  "elements": [
+    {
+      "from": [14, 2, 2],
+      "to":   [16, 14, 14],
+      "faces": {
+        "north": { "texture": "#all" },
+        "south": { "texture": "#all" },
+        "west":  { "texture": "#all" },
+        "east":  { "texture": "#all" },
+        "up":    { "texture": "#all" },
+        "down":  { "texture": "#all" }
+      }
+    }
+  ]
+}

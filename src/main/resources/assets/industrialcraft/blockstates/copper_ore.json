@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "industrialcraft:block/ores/copper_ore" }
+  }
+}

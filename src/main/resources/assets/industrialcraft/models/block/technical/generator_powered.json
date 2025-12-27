@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "up": "industrialcraft:block/technical/generator_top",
+    "down": "industrialcraft:block/technical/generator_bottom",
+    "north": "industrialcraft:block/technical/generator_powered",
+    "south": "industrialcraft:block/technical/generator_side",
+    "east": "industrialcraft:block/technical/generator_side",
+    "west": "industrialcraft:block/technical/generator_side",
+    "particle": "industrialcraft:block/technical/generator_powered"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "industrialcraft:item/cell/electrolyzed_water_cell"
+  }
+}

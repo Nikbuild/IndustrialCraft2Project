@@ -1,0 +1,23 @@
+{
+  "itemGroup.industrialcraft": "IndustrialCraft",
+
+  "item.industrialcraft.tin_ingot": "Tin Ingot",
+  "item.industrialcraft.lead_ingot": "Lead Ingot",
+  "item.industrialcraft.silver_ingot": "Silver Ingot",
+  "item.industrialcraft.steel_ingot": "Steel Ingot",
+  "item.industrialcraft.refined_iron_ingot": "Refined Iron Ingot",
+  "item.industrialcraft.uranium_ingot": "Uranium Ingot",
+
+  "item.industrialcraft.copper_dust": "Copper Dust",
+  "item.industrialcraft.iron_dust": "Iron Dust",
+  "item.industrialcraft.gold_dust": "Gold Dust",
+  "item.industrialcraft.tin_dust": "Tin Dust",
+  "item.industrialcraft.lead_dust": "Lead Dust",
+  "item.industrialcraft.silver_dust": "Silver Dust",
+  "item.industrialcraft.lithium_dust": "Lithium Dust",
+  "item.industrialcraft.diamond_dust": "Diamond Dust",
+  "item.industrialcraft.emerald_dust": "Emerald Dust",
+  "item.industrialcraft.lapis_dust": "Lapis Dust",
+  "item.industrialcraft.sulfur_dust": "Sulfur Dust",
+  "item.industrialcraft.silicon_dioxide_dust": "Silicon Dioxide Dust"
+}

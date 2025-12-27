@@ -1,0 +1,20 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "industrialcraft:block/technical/copper_cable_1_red"
+  },
+  "elements": [
+    {
+      "from": [ 5, 5, 5 ],
+      "to": [ 11, 11, 11 ],
+      "faces": {
+        "down":  { "uv": [ 0, 0, 6, 6 ], "texture": "#particle", "cullface": "down" },
+        "up":    { "uv": [ 0, 0, 6, 6 ], "texture": "#particle", "cullface": "up" },
+        "north": { "uv": [ 0, 0, 6, 6 ], "texture": "#particle", "cullface": "north" },
+        "south": { "uv": [ 0, 0, 6, 6 ], "texture": "#particle", "cullface": "south" },
+        "west":  { "uv": [ 0, 0, 6, 6 ], "texture": "#particle", "cullface": "west" },
+        "east":  { "uv": [ 0, 0, 6, 6 ], "texture": "#particle", "cullface": "east" }
+      }
+    }
+  ]
+}

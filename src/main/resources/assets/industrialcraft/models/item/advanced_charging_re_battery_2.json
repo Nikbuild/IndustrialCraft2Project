@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "industrialcraft:item/battery/advanced_charging_re_battery_2"
+  }
+}
