@@ -17,4 +17,18 @@ public final class ModTags {
                     Registries.BLOCK,
                     ResourceLocation.fromNamespaceAndPath(IndustrialCraft.MODID, "power_acceptors")
             );
+
+    /** Blocks that accept EU energy (machines, storage, etc.). */
+    public static final TagKey<Block> ENERGY_ACCEPTORS =
+            TagKey.create(
+                    Registries.BLOCK,
+                    ResourceLocation.fromNamespaceAndPath(IndustrialCraft.MODID, "energy_acceptors")
+            );
+
+    /** Blocks that produce EU energy (generators, solar panels, etc.). */
+    public static final TagKey<Block> ENERGY_SOURCES =
+            TagKey.create(
+                    Registries.BLOCK,
+                    ResourceLocation.fromNamespaceAndPath(IndustrialCraft.MODID, "energy_sources")
+            );
 }

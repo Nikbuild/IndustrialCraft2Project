@@ -1,5 +1,7 @@
 package com.nick.industrialcraft.content.block.cable;
 
+import com.nick.industrialcraft.registry.ModBlocks;
+import com.nick.industrialcraft.registry.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -9,7 +11,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -20,13 +26,17 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
+import com.nick.industrialcraft.registry.ModBlockEntity;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
 /**
  * Base class for all energy cables (copper, insulated copper, gold, iron, etc).
  * - 6-way connections stored in the blockstate
  * - Dynamic voxel shapes based on connections
+ * - BlockEntity for energy transfer
  */
-public abstract class BaseCableBlock extends Block {
+public abstract class BaseCableBlock extends Block implements EntityBlock {
 
     // 6-way connection booleans
     public static final BooleanProperty NORTH = BlockStateProperties.NORTH;
@@ -132,21 +142,90 @@ public abstract class BaseCableBlock extends Block {
     /* ---------------- connectivity policy ---------------- */
 
     /**
-     * Default rule set:
-     *  - Connect to other BaseCableBlocks
-     *  - Connect to any neighbor exposing energy capability
+     * Cable connection policy:
+     *  - Connect to other BaseCableBlocks (all cables connect to all cables)
+     *  - Connect to blocks in ENERGY_ACCEPTORS tag (machines that accept EU)
+     *  - Connect to blocks in ENERGY_SOURCES tag (machines that produce EU)
      */
     protected boolean canConnect(LevelReader level, BlockPos pos, Direction dir) {
-        BlockPos np = pos.relative(dir);
-        BlockState other = level.getBlockState(np);
+        if (level == null) return false;
 
-        // Connect to other cables
-        if (other.getBlock() instanceof BaseCableBlock) {
+        BlockPos np = pos.relative(dir);
+        BlockState neighborState = level.getBlockState(np);
+        if (neighborState == null) return false;
+
+        Block neighborBlock = neighborState.getBlock();
+
+        // Step 1: Connect to other cables
+        if (neighborBlock instanceof BaseCableBlock) {
             return true;
         }
 
-        // TODO: Add capability check for energy
+        // Step 2: Connect to energy acceptors (machines that accept EU)
+        if (neighborState.is(ModTags.ENERGY_ACCEPTORS)) {
+            return true;
+        }
+
+        // Step 3: Connect to energy sources (machines that produce EU)
+        if (neighborState.is(ModTags.ENERGY_SOURCES)) {
+            return true;
+        }
+
+        // Step 4: Direct block checks (fallback/debug)
+        // These are redundant with the tag system but kept as a safety net
+        if (neighborBlock == ModBlocks.GENERATOR.get()) {
+            return true;
+        }
+        if (neighborBlock == ModBlocks.GEOTHERMAL_GENERATOR.get()) {
+            return true;
+        }
+        if (neighborBlock == ModBlocks.ELECTRIC_FURNACE.get()) {
+            return true;
+        }
 
         return false;
+    }
+
+    /* ---------------- EntityBlock implementation ---------------- */
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new CableBlockEntity(pos, state);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
+        if (blockEntityType != ModBlockEntity.CABLE.get()) {
+            return null;
+        }
+        return level.isClientSide ? null : (lvl, pos, st, be) -> CableBlockEntity.serverTick(lvl, pos, st, (CableBlockEntity) be);
+    }
+
+    /* ---------------- Capability Registration ---------------- */
+
+    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        // Register energy capability for all cable types
+        event.registerBlock(
+            Capabilities.EnergyStorage.BLOCK,
+            (level, pos, state, be, side) -> {
+                if (be instanceof CableBlockEntity cable) {
+                    return cable.getEnergyStorage();
+                }
+                return null;
+            },
+            ModBlocks.COPPER_CABLE.get(),
+            ModBlocks.INSULATED_COPPER_CABLE.get(),
+            ModBlocks.GOLD_CABLE.get(),
+            ModBlocks.GOLD_CABLE_INSULATED.get(),
+            ModBlocks.GOLD_CABLE_DOUBLE_INSULATED.get(),
+            ModBlocks.HIGH_VOLTAGE_CABLE.get(),
+            ModBlocks.HIGH_VOLTAGE_CABLE_INSULATED.get(),
+            ModBlocks.HIGH_VOLTAGE_CABLE_DOUBLE_INSULATED.get(),
+            ModBlocks.HIGH_VOLTAGE_CABLE_QUADRUPLE_INSULATED.get(),
+            ModBlocks.GLASS_FIBER_CABLE.get(),
+            ModBlocks.ULTRA_LOW_CURRENT_CABLE.get()
+        );
     }
 }

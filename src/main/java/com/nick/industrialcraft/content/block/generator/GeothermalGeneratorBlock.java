@@ -23,47 +23,33 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
-
-import com.nick.industrialcraft.registry.ModBlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
-public class GeneratorBlock extends Block implements EntityBlock {
+import com.nick.industrialcraft.registry.ModBlockEntity;
+
+public class GeothermalGeneratorBlock extends Block implements EntityBlock {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
-    public GeneratorBlock(Properties properties) {
+    public GeothermalGeneratorBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.defaultBlockState()
             .setValue(FACING, Direction.SOUTH)
             .setValue(POWERED, false));
     }
 
-    // Register energy capability for this block
-    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-        event.registerBlock(
-            Capabilities.EnergyStorage.BLOCK,
-            (level, pos, state, be, side) -> {
-                if (be instanceof GeneratorBlockEntity generator) {
-                    return generator.getEnergyStorage();
-                }
-                return null;
-            },
-            com.nick.industrialcraft.registry.ModBlocks.GENERATOR.get()
-        );
-    }
-
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new GeneratorBlockEntity(pos, state);
+        return new GeothermalGeneratorBlockEntity(pos, state);
     }
 
     @Override
     public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide) {
             BlockEntity be = level.getBlockEntity(pos);
-            if (be instanceof GeneratorBlockEntity generator && player instanceof ServerPlayer sp) {
+            if (be instanceof GeothermalGeneratorBlockEntity generator && player instanceof ServerPlayer sp) {
                 sp.openMenu(generator, pos);
                 return InteractionResult.CONSUME;
             }
@@ -74,21 +60,26 @@ public class GeneratorBlock extends Block implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        if (blockEntityType != ModBlockEntity.GENERATOR.get()) {
+        if (blockEntityType != ModBlockEntity.GEOTHERMAL_GENERATOR.get()) {
             return null;
         }
-        return level.isClientSide ? null : (lvl, pos, st, be) -> GeneratorBlockEntity.serverTick(lvl, pos, st, (GeneratorBlockEntity) be);
+        return level.isClientSide ? null : (lvl, pos, st, be) -> GeothermalGeneratorBlockEntity.serverTick(lvl, pos, st, (GeothermalGeneratorBlockEntity) be);
     }
 
     @Override
     public void destroy(LevelAccessor level, BlockPos pos, BlockState state) {
         if (level instanceof Level realLevel) {
             BlockEntity be = realLevel.getBlockEntity(pos);
-            if (be instanceof GeneratorBlockEntity generator) {
+            if (be instanceof GeothermalGeneratorBlockEntity generator) {
                 // Drop the fuel item if present
-                var fuel = generator.getInventory().getStackInSlot(GeneratorBlockEntity.FUEL_SLOT);
+                var fuel = generator.getInventory().getStackInSlot(GeothermalGeneratorBlockEntity.FUEL_SLOT);
                 if (!fuel.isEmpty()) {
                     popResource(realLevel, pos, fuel);
+                }
+                // Drop the output item if present
+                var output = generator.getInventory().getStackInSlot(GeothermalGeneratorBlockEntity.OUTPUT_SLOT);
+                if (!output.isEmpty()) {
+                    popResource(realLevel, pos, output);
                 }
             }
         }
@@ -104,5 +95,20 @@ public class GeneratorBlock extends Block implements EntityBlock {
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState()
             .setValue(FACING, context.getHorizontalDirection());
+    }
+
+    // ========== Capability Registration ==========
+
+    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlock(
+            Capabilities.EnergyStorage.BLOCK,
+            (level, pos, state, be, side) -> {
+                if (be instanceof GeothermalGeneratorBlockEntity generator) {
+                    return generator.getEnergyStorage();
+                }
+                return null;
+            },
+            com.nick.industrialcraft.registry.ModBlocks.GEOTHERMAL_GENERATOR.get()
+        );
     }
 }

@@ -1,6 +1,8 @@
 package com.nick.industrialcraft;
 
+import com.nick.industrialcraft.client.screen.ElectricFurnaceScreen;
 import com.nick.industrialcraft.client.screen.GeneratorScreen;
+import com.nick.industrialcraft.client.screen.GeothermalGeneratorScreen;
 import com.nick.industrialcraft.registry.ModMenus;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -29,5 +31,7 @@ public final class IndustrialCraftClient {
     @SubscribeEvent
     static void onRegisterScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenus.GENERATOR.get(), GeneratorScreen::new);
+        event.register(ModMenus.GEOTHERMAL_GENERATOR.get(), GeothermalGeneratorScreen::new);
+        event.register(ModMenus.ELECTRIC_FURNACE.get(), ElectricFurnaceScreen::new);
     }
 }

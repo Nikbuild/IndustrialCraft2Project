@@ -1548,6 +1548,12 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> GENERATOR_ITEM =
             ITEMS.registerSimpleBlockItem("generator", ModBlocks.GENERATOR);
 
+    public static final DeferredItem<BlockItem> GEOTHERMAL_GENERATOR_ITEM =
+            ITEMS.registerSimpleBlockItem("geothermal_generator", ModBlocks.GEOTHERMAL_GENERATOR);
+
+    public static final DeferredItem<BlockItem> ELECTRIC_FURNACE_ITEM =
+            ITEMS.registerSimpleBlockItem("electric_furnace", ModBlocks.ELECTRIC_FURNACE);
+
     public static final DeferredItem<BlockItem> REACTOR_CHAMBER_ITEM =
             ITEMS.registerSimpleBlockItem("reactor_chamber", ModBlocks.REACTOR_CHAMBER);
 

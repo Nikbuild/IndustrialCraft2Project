@@ -2,6 +2,9 @@ package com.nick.industrialcraft.registry;
 
 import com.nick.industrialcraft.IndustrialCraft;
 import com.nick.industrialcraft.content.block.generator.GeneratorBlockEntity;
+import com.nick.industrialcraft.content.block.generator.GeothermalGeneratorBlockEntity;
+import com.nick.industrialcraft.content.block.machine.ElectricFurnaceBlockEntity;
+import com.nick.industrialcraft.content.block.cable.CableBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -25,6 +28,42 @@ public final class ModBlockEntity {
     // Generator Block Entity
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GeneratorBlockEntity>> GENERATOR =
             BLOCK_ENTITY_TYPES.register("generator", () ->
-                    new BlockEntityType<>(GeneratorBlockEntity::new, Set.of(ModBlocks.GENERATOR.get()))
+                    new BlockEntityType<>(GeneratorBlockEntity::new, Set.of(
+                            ModBlocks.GENERATOR.get()
+                    ))
+            );
+
+    // Geothermal Generator Block Entity
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GeothermalGeneratorBlockEntity>> GEOTHERMAL_GENERATOR =
+            BLOCK_ENTITY_TYPES.register("geothermal_generator", () ->
+                    new BlockEntityType<>(GeothermalGeneratorBlockEntity::new, Set.of(
+                            ModBlocks.GEOTHERMAL_GENERATOR.get()
+                    ))
+            );
+
+    // Electric Furnace Block Entity
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ElectricFurnaceBlockEntity>> ELECTRIC_FURNACE =
+            BLOCK_ENTITY_TYPES.register("electric_furnace", () ->
+                    new BlockEntityType<>(ElectricFurnaceBlockEntity::new, Set.of(
+                            ModBlocks.ELECTRIC_FURNACE.get()
+                    ))
+            );
+
+    // Cable Block Entity (shared by all cable types)
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CableBlockEntity>> CABLE =
+            BLOCK_ENTITY_TYPES.register("cable", () ->
+                    new BlockEntityType<>(CableBlockEntity::new, Set.of(
+                            ModBlocks.COPPER_CABLE.get(),
+                            ModBlocks.INSULATED_COPPER_CABLE.get(),
+                            ModBlocks.GOLD_CABLE.get(),
+                            ModBlocks.GOLD_CABLE_INSULATED.get(),
+                            ModBlocks.GOLD_CABLE_DOUBLE_INSULATED.get(),
+                            ModBlocks.HIGH_VOLTAGE_CABLE.get(),
+                            ModBlocks.HIGH_VOLTAGE_CABLE_INSULATED.get(),
+                            ModBlocks.HIGH_VOLTAGE_CABLE_DOUBLE_INSULATED.get(),
+                            ModBlocks.HIGH_VOLTAGE_CABLE_QUADRUPLE_INSULATED.get(),
+                            ModBlocks.GLASS_FIBER_CABLE.get(),
+                            ModBlocks.ULTRA_LOW_CURRENT_CABLE.get()
+                    ))
             );
 }

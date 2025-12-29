@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "industrialcraft:generator",
+    "industrialcraft:geothermal_generator"
+  ]
+}

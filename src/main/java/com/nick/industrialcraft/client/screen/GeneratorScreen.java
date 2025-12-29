@@ -87,19 +87,20 @@ public class GeneratorScreen extends AbstractContainerScreen<GeneratorMenu> {
     }
 
     /**
-     * Render energy bar texture (test6.png) revealing from left to right as coal burns.
-     * Starts invisible, reveals left-to-right as coal is consumed.
+     * Render energy bar texture (test6.png) revealing from left to right based on stored energy.
+     * Fills proportionally to current energy vs max energy capacity.
      */
     private void renderEnergyBar(GuiGraphics guiGraphics) {
-        if (this.menu.getMaxBurnTime() <= 0) return;
+        int energy = this.menu.getEnergy();
+        int maxEnergy = this.menu.getMaxEnergy();
 
-        // Calculate burn progress: (maxBurnTime - burnTime) / maxBurnTime
-        // This gives 0% when coal is fresh, 100% when coal is fully consumed
-        int burnedTime = this.menu.getMaxBurnTime() - this.menu.getBurnTime();
-        float burnProgress = (float) burnedTime / this.menu.getMaxBurnTime();
+        if (maxEnergy <= 0 || energy <= 0) return;  // Don't render if no energy
+
+        // Calculate energy percentage (0.0 to 1.0)
+        float energyPercent = (float) energy / maxEnergy;
 
         // Calculate how much of the texture to reveal (left to right)
-        int revealWidth = Math.round(ENERGY_BAR_TEX_W * burnProgress);
+        int revealWidth = Math.round(ENERGY_BAR_TEX_W * energyPercent);
         if (revealWidth <= 0) return;  // Don't render if nothing to show
 
         // Screen coordinates for the energy bar area

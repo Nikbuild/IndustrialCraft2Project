@@ -269,6 +269,8 @@ public class IndustrialCraft {
 
                                 // Technical Blocks
                                 out.accept(ModItems.GENERATOR_ITEM.get());
+                                out.accept(ModItems.GEOTHERMAL_GENERATOR_ITEM.get());
+                                out.accept(ModItems.ELECTRIC_FURNACE_ITEM.get());
                                 out.accept(ModItems.REACTOR_CHAMBER_ITEM.get());
                                 out.accept(ModItems.ELECTRIC_BLOCK_ITEM.get());
                                 out.accept(ModItems.MACHINE_ITEM.get());
@@ -298,6 +300,7 @@ public class IndustrialCraft {
 
     public IndustrialCraft(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::registerCapabilities);
 
         ModBlocks.BLOCKS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
@@ -306,6 +309,18 @@ public class IndustrialCraft {
         CREATIVE_MODE_TABS.register(modEventBus);
 
         NeoForge.EVENT_BUS.addListener(this::onServerStarting);
+    }
+
+    /* --------------------------------------------------------------------- */
+    /* Capability Registration                                                */
+    /* --------------------------------------------------------------------- */
+
+    private void registerCapabilities(net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent event) {
+        // Register energy capabilities for all blocks
+        com.nick.industrialcraft.content.block.generator.GeneratorBlock.registerCapabilities(event);
+        com.nick.industrialcraft.content.block.generator.GeothermalGeneratorBlock.registerCapabilities(event);
+        com.nick.industrialcraft.content.block.machine.ElectricFurnaceBlock.registerCapabilities(event);
+        com.nick.industrialcraft.content.block.cable.BaseCableBlock.registerCapabilities(event);
     }
 
     /* --------------------------------------------------------------------- */

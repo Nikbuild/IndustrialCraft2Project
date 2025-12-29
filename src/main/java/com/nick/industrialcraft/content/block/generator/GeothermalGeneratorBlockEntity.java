@@ -7,7 +7,10 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import com.nick.industrialcraft.registry.ModItems;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -22,10 +25,11 @@ import com.nick.industrialcraft.content.block.cable.CableBlockEntity;
 
 import java.util.*;
 
-public class GeneratorBlockEntity extends BlockEntity implements MenuProvider {
+public class GeothermalGeneratorBlockEntity extends BlockEntity implements MenuProvider {
 
     public static final int FUEL_SLOT = 0;
-    public static final int SLOTS = 1;
+    public static final int OUTPUT_SLOT = 1;
+    public static final int SLOTS = 2;
 
     private final ItemStackHandler inventory = new ItemStackHandler(SLOTS) {
         @Override
@@ -34,28 +38,33 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider {
         }
     };
 
-    private int burnTime = 0;
-    private int maxBurnTime = 0;
-    private int energy = 0;
-    private boolean powered = false;
+    // IC2 Geothermal Generator specifications:
+    // - 10 EU/t generation rate
+    // - 1000 EU per lava bucket/cell
+    // - Max capacity: 24,000 EU (24 buckets)
 
-    private static final int MAX_ENERGY = 4000;  // Generator stores 4000 EU max (divisible by 2)
-    private static final int ENERGY_PER_TICK = 13;  // 13 EU/tick generation (balanced for 3.25 furnaces, 4000 EU per coal)
-    private static final int MAX_OUTPUT_RATE = 13;  // Maximum output rate per tick for simultaneous distribution
+    private int fuel = 0;                         // Current stored fuel/energy (in EU)
+    private int energy = 0;                       // Current output buffer energy
+    private boolean powered = false;              // Active/burning state
+
+    private static final int MAX_FUEL = 24000;    // 24 buckets worth of lava
+    private static final int FUEL_PER_BUCKET = 1000;  // Each lava bucket/cell = 1000 EU
+    private static final int MAX_ENERGY = 1000;   // Buffer for smooth operation
+    private static final int ENERGY_PER_TICK = 20;    // 20 EU/t generation (IC2-accurate)
+    private static final int MAX_OUTPUT = 20;     // 20 EU/t output (IC2-accurate)
 
     // NeoForge Energy Capability (for compatibility with other mods)
     private final IEnergyStorage energyStorage = new IEnergyStorage() {
         @Override
         public int receiveEnergy(int maxReceive, boolean simulate) {
-            return 0; // Generator doesn't receive energy
+            return 0; // Geothermal Generator doesn't receive energy
         }
 
         @Override
         public int extractEnergy(int maxExtract, boolean simulate) {
             if (energy <= 0) return 0;
 
-            // For external mods, allow extracting at max output rate
-            int toExtract = Math.min(maxExtract, Math.min(energy, MAX_OUTPUT_RATE));
+            int toExtract = Math.min(maxExtract, Math.min(energy, MAX_OUTPUT));
 
             if (!simulate) {
                 energy -= toExtract;
@@ -82,12 +91,12 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider {
 
         @Override
         public boolean canReceive() {
-            return false; // Generator only outputs energy
+            return false; // Geothermal Generator only outputs energy
         }
     };
 
-    public GeneratorBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntity.GENERATOR.get(), pos, state);
+    public GeothermalGeneratorBlockEntity(BlockPos pos, BlockState state) {
+        super(ModBlockEntity.GEOTHERMAL_GENERATOR.get(), pos, state);
     }
 
     // Expose energy capability to other mods
@@ -97,24 +106,24 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider {
 
     @Override
     public Component getDisplayName() {
-        return Component.literal("Generator");
+        return Component.literal("Geothermal Generator");
     }
 
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory playerInv, Player player) {
-        return new GeneratorMenu(id, playerInv, this);
+        return new GeothermalGeneratorMenu(id, playerInv, this);
     }
 
     public ItemStackHandler getInventory() {
         return inventory;
     }
 
-    public int getBurnTime() {
-        return burnTime;
+    public int getFuel() {
+        return fuel;
     }
 
-    public int getMaxBurnTime() {
-        return maxBurnTime;
+    public int getMaxFuel() {
+        return MAX_FUEL;
     }
 
     public int getEnergy() {
@@ -125,8 +134,17 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider {
         return MAX_ENERGY;
     }
 
-    public void setBurnTimeClient(int time) {
-        this.burnTime = time;
+    // Legacy compatibility for GUI (burnTime used for progress bar)
+    public int getBurnTime() {
+        return fuel;
+    }
+
+    public int getMaxBurnTime() {
+        return MAX_FUEL;
+    }
+
+    public void setFuelClient(int fuel) {
+        this.fuel = Math.min(fuel, MAX_FUEL);
     }
 
     public void setEnergyClient(int energy) {
@@ -144,10 +162,9 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider {
     // ========== Energy Transfer Logic (Simultaneous Distribution) ==========
 
     /**
-     * Output energy to machines using simultaneous distribution like original IC2.
+     * Output energy to machines using simultaneous fair distribution.
      * Every tick, ALL connected machines draw energy simultaneously from the generator's battery.
-     * Generator produces 13 EU/tick, can power ~3.25 furnaces (4 EU/tick each) in steady state.
-     * With 4+ furnaces, battery drains. With 3 or less, battery charges.
+     * Geothermal Generator produces 20 EU/tick, can power ~5 furnaces (4 EU/tick each) in steady state.
      */
     private void outputEnergy(Level level, BlockPos pos) {
         // Scan the cable network to find all connected machines
@@ -158,11 +175,6 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider {
         for (Direction dir : Direction.values()) {
             BlockPos neighborPos = pos.relative(dir);
             scanNetwork(level, neighborPos, visitedCables, machines);
-        }
-
-        // Debug logging
-        if (level.getGameTime() % 20 == 0) {
-            System.out.println("DEBUG GENERATOR @ " + pos + ": energy=" + energy + ", machines found=" + machines.size());
         }
 
         if (machines.isEmpty()) return;
@@ -180,24 +192,14 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider {
         if (needyMachines.isEmpty()) return;
 
         // Fair distribution: split available energy equally among all machines that want it
-        // Example: 13 EU battery, 4 furnaces → each gets 3 EU (13/4 = 3.25, rounded down)
+        // Example: 20 EU battery, 4 furnaces → each gets 5 EU (20/4 = 5)
         int energyPerMachine = energy / needyMachines.size();
         int totalTransferred = 0;
-
-        // Debug logging
-        if (level.getGameTime() % 20 == 0) {
-            System.out.println("  -> Fair distribution: " + energyPerMachine + " EU per machine (" + energy + " / " + needyMachines.size() + ")");
-        }
 
         // Transfer to each machine
         for (MachineConnection machine : needyMachines) {
             // Give each machine its fair share
             int transferred = machine.storage.receiveEnergy(energyPerMachine, false);
-
-            // Debug logging
-            if (level.getGameTime() % 20 == 0) {
-                System.out.println("  -> Transferred " + transferred + " EU to machine at " + machine.pos);
-            }
 
             if (transferred > 0) {
                 energy -= transferred;
@@ -272,41 +274,54 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider {
 
     // ========== Server Tick ==========
 
-    public static void serverTick(net.minecraft.world.level.Level level, BlockPos pos, BlockState state, GeneratorBlockEntity be) {
+    public static void serverTick(Level level, BlockPos pos, BlockState state, GeothermalGeneratorBlockEntity be) {
         if (level.isClientSide) return;
 
         boolean wasPowered = be.powered;
+        boolean needsUpdate = false;
 
-        // If we're burning, continue
-        if (be.burnTime > 0) {
-            be.burnTime--;
+        // Try to consume lava from inventory if we have space
+        if (be.fuel < MAX_FUEL && !be.inventory.getStackInSlot(FUEL_SLOT).isEmpty()) {
+            ItemStack fuelStack = be.inventory.getStackInSlot(FUEL_SLOT);
+
+            if (fuelStack.is(Items.LAVA_BUCKET)) {
+                // Add lava fuel from lava bucket
+                int toAdd = Math.min(FUEL_PER_BUCKET, MAX_FUEL - be.fuel);
+                be.fuel += toAdd;
+
+                // Replace lava bucket with empty bucket
+                be.inventory.setStackInSlot(FUEL_SLOT, new ItemStack(Items.BUCKET));
+                needsUpdate = true;
+            } else if (fuelStack.is(ModItems.LAVA_CELL.get())) {
+                // Add lava fuel from lava cell
+                int toAdd = Math.min(FUEL_PER_BUCKET, MAX_FUEL - be.fuel);
+                be.fuel += toAdd;
+
+                // Return empty cell to output slot
+                fuelStack.shrink(1);
+                ItemStack outputStack = be.inventory.getStackInSlot(OUTPUT_SLOT);
+                if (outputStack.isEmpty()) {
+                    be.inventory.setStackInSlot(OUTPUT_SLOT, new ItemStack(ModItems.CELL.get()));
+                } else if (outputStack.is(ModItems.CELL.get()) && outputStack.getCount() < outputStack.getMaxStackSize()) {
+                    outputStack.grow(1);
+                }
+                needsUpdate = true;
+            }
+        }
+
+        // Generate energy if we have fuel and storage isn't full
+        if (be.fuel > 0 && be.energy + ENERGY_PER_TICK <= MAX_ENERGY) {
+            be.fuel--;
+            be.energy += ENERGY_PER_TICK;
             be.powered = true;
-
-            // Generate energy while burning (if not already full)
-            if (be.energy < MAX_ENERGY) {
-                be.energy += ENERGY_PER_TICK;
-                if (be.energy > MAX_ENERGY) {
-                    be.energy = MAX_ENERGY;
-                }
-            }
-
-            be.setChanged();
-        } else {
+            needsUpdate = true;
+        } else if (be.fuel <= 0) {
             be.powered = false;
+        }
 
-            // Only try to get fuel if storage is NOT full
-            if (be.energy < MAX_ENERGY && !be.inventory.getStackInSlot(FUEL_SLOT).isEmpty()) {
-                var fuelStack = be.inventory.getStackInSlot(FUEL_SLOT);
-
-                // Simple fuel check - accept coal and charcoal
-                if (isFuel(fuelStack)) {
-                    be.maxBurnTime = 308; // ~15.4 seconds (308 * 13 = 4,004 EU per coal, matches IC2)
-                    be.burnTime = be.maxBurnTime;
-                    be.inventory.extractItem(FUEL_SLOT, 1, false);
-                    be.powered = true;
-                    be.setChanged();
-                }
-            }
+        // Clamp energy to max
+        if (be.energy > MAX_ENERGY) {
+            be.energy = MAX_ENERGY;
         }
 
         // Output energy to adjacent machines
@@ -314,25 +329,22 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider {
             be.outputEnergy(level, pos);
         }
 
-        // Update blockstate if powered changed
+        // Update blockstate if powered state changed
         if (wasPowered != be.powered) {
-            level.setBlock(pos, state.setValue(com.nick.industrialcraft.content.block.generator.GeneratorBlock.POWERED, be.powered), 3);
+            level.setBlock(pos, state.setValue(com.nick.industrialcraft.content.block.generator.GeothermalGeneratorBlock.POWERED, be.powered), 3);
+            needsUpdate = true;
         }
-    }
 
-    private static boolean isFuel(net.minecraft.world.item.ItemStack stack) {
-        if (stack.isEmpty()) return false;
-        var item = stack.getItem();
-        return item == net.minecraft.world.item.Items.COAL ||
-               item == net.minecraft.world.item.Items.CHARCOAL;
+        if (needsUpdate) {
+            be.setChanged();
+        }
     }
 
     @Override
     protected void saveAdditional(ValueOutput out) {
         super.saveAdditional(out);
         inventory.serialize(out.child("Inventory"));
-        out.putInt("BurnTime", burnTime);
-        out.putInt("MaxBurnTime", maxBurnTime);
+        out.putInt("Fuel", fuel);
         out.putInt("Energy", energy);
         out.putBoolean("Powered", powered);
     }
@@ -341,8 +353,7 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider {
     protected void loadAdditional(ValueInput in) {
         super.loadAdditional(in);
         in.child("Inventory").ifPresent(inventory::deserialize);
-        burnTime = in.getIntOr("BurnTime", 0);
-        maxBurnTime = in.getIntOr("MaxBurnTime", 0);
+        fuel = in.getIntOr("Fuel", 0);
         energy = in.getIntOr("Energy", 0);
         powered = in.getBooleanOr("Powered", false);
     }

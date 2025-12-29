@@ -13,6 +13,8 @@ import com.nick.industrialcraft.content.block.cable.HighVoltageCableQuadrupleIns
 import com.nick.industrialcraft.content.block.cable.InsulatedCopperCableBlock;
 import com.nick.industrialcraft.content.block.cable.UltraLowCurrentCableBlock;
 import com.nick.industrialcraft.content.block.generator.GeneratorBlock;
+import com.nick.industrialcraft.content.block.generator.GeothermalGeneratorBlock;
+import com.nick.industrialcraft.content.block.machine.ElectricFurnaceBlock;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -540,6 +542,40 @@ public final class ModBlocks {
                                     ResourceLocation.fromNamespaceAndPath(
                                             IndustrialCraft.MODID,
                                             "generator"
+                                    )
+                            ))
+            )
+    );
+
+    public static final DeferredBlock<Block> GEOTHERMAL_GENERATOR = BLOCKS.register(
+            "geothermal_generator",
+            () -> new GeothermalGeneratorBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.METAL)
+                            .strength(3.0f)
+                            .requiresCorrectToolForDrops()
+                            .setId(ResourceKey.create(
+                                    Registries.BLOCK,
+                                    ResourceLocation.fromNamespaceAndPath(
+                                            IndustrialCraft.MODID,
+                                            "geothermal_generator"
+                                    )
+                            ))
+            )
+    );
+
+    public static final DeferredBlock<Block> ELECTRIC_FURNACE = BLOCKS.register(
+            "electric_furnace",
+            () -> new ElectricFurnaceBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.METAL)
+                            .strength(3.0f)
+                            .requiresCorrectToolForDrops()
+                            .setId(ResourceKey.create(
+                                    Registries.BLOCK,
+                                    ResourceLocation.fromNamespaceAndPath(
+                                            IndustrialCraft.MODID,
+                                            "electric_furnace"
                                     )
                             ))
             )
