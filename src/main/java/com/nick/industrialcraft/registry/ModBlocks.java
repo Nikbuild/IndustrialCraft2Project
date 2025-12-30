@@ -15,6 +15,8 @@ import com.nick.industrialcraft.content.block.cable.UltraLowCurrentCableBlock;
 import com.nick.industrialcraft.content.block.generator.GeneratorBlock;
 import com.nick.industrialcraft.content.block.generator.GeothermalGeneratorBlock;
 import com.nick.industrialcraft.content.block.machine.ElectricFurnaceBlock;
+import com.nick.industrialcraft.content.block.machine.CompressorBlock;
+import com.nick.industrialcraft.content.block.machine.ExtractorBlock;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -576,6 +578,57 @@ public final class ModBlocks {
                                     ResourceLocation.fromNamespaceAndPath(
                                             IndustrialCraft.MODID,
                                             "electric_furnace"
+                                    )
+                            ))
+            )
+    );
+
+    public static final DeferredBlock<Block> MACERATOR = BLOCKS.register(
+            "macerator",
+            () -> new com.nick.industrialcraft.content.block.machine.MaceratorBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.METAL)
+                            .strength(3.0f)
+                            .requiresCorrectToolForDrops()
+                            .setId(ResourceKey.create(
+                                    Registries.BLOCK,
+                                    ResourceLocation.fromNamespaceAndPath(
+                                            IndustrialCraft.MODID,
+                                            "macerator"
+                                    )
+                            ))
+            )
+    );
+
+    public static final DeferredBlock<Block> EXTRACTOR = BLOCKS.register(
+            "extractor",
+            () -> new ExtractorBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.METAL)
+                            .strength(3.0f)
+                            .requiresCorrectToolForDrops()
+                            .setId(ResourceKey.create(
+                                    Registries.BLOCK,
+                                    ResourceLocation.fromNamespaceAndPath(
+                                            IndustrialCraft.MODID,
+                                            "extractor"
+                                    )
+                            ))
+            )
+    );
+
+    public static final DeferredBlock<Block> COMPRESSOR = BLOCKS.register(
+            "compressor",
+            () -> new CompressorBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.METAL)
+                            .strength(3.0f)
+                            .requiresCorrectToolForDrops()
+                            .setId(ResourceKey.create(
+                                    Registries.BLOCK,
+                                    ResourceLocation.fromNamespaceAndPath(
+                                            IndustrialCraft.MODID,
+                                            "compressor"
                                     )
                             ))
             )

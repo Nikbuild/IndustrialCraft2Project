@@ -39,9 +39,9 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider {
     private int energy = 0;
     private boolean powered = false;
 
-    private static final int MAX_ENERGY = 4000;  // Generator stores 4000 EU max (divisible by 2)
-    private static final int ENERGY_PER_TICK = 13;  // 13 EU/tick generation (balanced for 3.25 furnaces, 4000 EU per coal)
-    private static final int MAX_OUTPUT_RATE = 13;  // Maximum output rate per tick for simultaneous distribution
+    private static final int MAX_ENERGY = 4000;  // Generator stores 4000 EU max
+    private static final int ENERGY_PER_TICK = 10;  // 10 EU/tick generation (400 ticks * 10 EU = 4000 EU per coal)
+    private static final int MAX_OUTPUT_RATE = 10;  // Maximum output rate per tick for simultaneous distribution
 
     // NeoForge Energy Capability (for compatibility with other mods)
     private final IEnergyStorage energyStorage = new IEnergyStorage() {
@@ -160,11 +160,6 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider {
             scanNetwork(level, neighborPos, visitedCables, machines);
         }
 
-        // Debug logging
-        if (level.getGameTime() % 20 == 0) {
-            System.out.println("DEBUG GENERATOR @ " + pos + ": energy=" + energy + ", machines found=" + machines.size());
-        }
-
         if (machines.isEmpty()) return;
         if (energy <= 0) return;
 
@@ -184,20 +179,10 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider {
         int energyPerMachine = energy / needyMachines.size();
         int totalTransferred = 0;
 
-        // Debug logging
-        if (level.getGameTime() % 20 == 0) {
-            System.out.println("  -> Fair distribution: " + energyPerMachine + " EU per machine (" + energy + " / " + needyMachines.size() + ")");
-        }
-
         // Transfer to each machine
         for (MachineConnection machine : needyMachines) {
             // Give each machine its fair share
             int transferred = machine.storage.receiveEnergy(energyPerMachine, false);
-
-            // Debug logging
-            if (level.getGameTime() % 20 == 0) {
-                System.out.println("  -> Transferred " + transferred + " EU to machine at " + machine.pos);
-            }
 
             if (transferred > 0) {
                 energy -= transferred;
@@ -300,7 +285,7 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider {
 
                 // Simple fuel check - accept coal and charcoal
                 if (isFuel(fuelStack)) {
-                    be.maxBurnTime = 308; // ~15.4 seconds (308 * 13 = 4,004 EU per coal, matches IC2)
+                    be.maxBurnTime = 400; // 20 seconds (400 * 10 = 4,000 EU per coal)
                     be.burnTime = be.maxBurnTime;
                     be.inventory.extractItem(FUEL_SLOT, 1, false);
                     be.powered = true;

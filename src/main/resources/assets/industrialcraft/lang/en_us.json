@@ -1,6 +1,10 @@
 {
   "itemGroup.industrialcraft": "IndustrialCraft",
 
+  "block.industrialcraft.extractor": "Extractor",
+  "block.industrialcraft.compressor": "Compressor",
+  "container.industrialcraft.compressor": "Compressor",
+
   "item.industrialcraft.tin_ingot": "Tin Ingot",
   "item.industrialcraft.lead_ingot": "Lead Ingot",
   "item.industrialcraft.silver_ingot": "Silver Ingot",

@@ -4,6 +4,9 @@ import com.nick.industrialcraft.IndustrialCraft;
 import com.nick.industrialcraft.content.block.generator.GeneratorBlockEntity;
 import com.nick.industrialcraft.content.block.generator.GeothermalGeneratorBlockEntity;
 import com.nick.industrialcraft.content.block.machine.ElectricFurnaceBlockEntity;
+import com.nick.industrialcraft.content.block.machine.MaceratorBlockEntity;
+import com.nick.industrialcraft.content.block.machine.ExtractorBlockEntity;
+import com.nick.industrialcraft.content.block.machine.CompressorBlockEntity;
 import com.nick.industrialcraft.content.block.cable.CableBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -46,6 +49,30 @@ public final class ModBlockEntity {
             BLOCK_ENTITY_TYPES.register("electric_furnace", () ->
                     new BlockEntityType<>(ElectricFurnaceBlockEntity::new, Set.of(
                             ModBlocks.ELECTRIC_FURNACE.get()
+                    ))
+            );
+
+    // Macerator Block Entity
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MaceratorBlockEntity>> MACERATOR =
+            BLOCK_ENTITY_TYPES.register("macerator", () ->
+                    new BlockEntityType<>(MaceratorBlockEntity::new, Set.of(
+                            ModBlocks.MACERATOR.get()
+                    ))
+            );
+
+    // Extractor Block Entity
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ExtractorBlockEntity>> EXTRACTOR =
+            BLOCK_ENTITY_TYPES.register("extractor", () ->
+                    new BlockEntityType<>(ExtractorBlockEntity::new, Set.of(
+                            ModBlocks.EXTRACTOR.get()
+                    ))
+            );
+
+    // Compressor Block Entity
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CompressorBlockEntity>> COMPRESSOR =
+            BLOCK_ENTITY_TYPES.register("compressor", () ->
+                    new BlockEntityType<>(CompressorBlockEntity::new, Set.of(
+                            ModBlocks.COMPRESSOR.get()
                     ))
             );
 

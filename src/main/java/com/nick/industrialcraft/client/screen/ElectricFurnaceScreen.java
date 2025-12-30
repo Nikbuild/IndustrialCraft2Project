@@ -21,6 +21,7 @@ public class ElectricFurnaceScreen extends AbstractContainerScreen<ElectricFurna
 
     // Energy flow display (shows power availability like a gas pedal)
     private float flowLevel = 0.0f;       // Current display level (0.0 to 1.0)
+    private boolean firstFrame = true;    // Skip animation on first frame after data sync
     private static final float FLOW_STEP = 0.05f;  // 5% per frame (20 total frames)
     private static final int ENERGY_NEEDED_PER_TICK = 4;  // Energy required to continue operation
 
@@ -46,25 +47,41 @@ public class ElectricFurnaceScreen extends AbstractContainerScreen<ElectricFurna
     /**
      * Render energy bar overlay showing power availability like a gas pedal.
      * The bar shows what percentage of required energy (4 EU/t) is currently flowing.
-     * 100% = receiving full 4+ EU/t (can operate)
-     * 50% = receiving 2 EU/t (underpowered)
-     * 0% = receiving no energy
+     * When actively processing: shows actual energy received as percentage
+     * When idle but power available: shows full bar (power ready to use)
+     * When no power: empty bar
      * Transitions use discrete 5% steps (20 frames) for smooth, visible animation.
      */
     private void renderEnergyOverlay(GuiGraphics guiGraphics) {
         int energyReceived = this.menu.getEnergyReceivedLastTick();
+        boolean powerAvailable = this.menu.isPowerAvailable();
 
-        // Target shows percentage of required energy being received
-        // Cap at 100% if receiving more than needed
-        float target = Math.min(1.0f, (float)energyReceived / ENERGY_NEEDED_PER_TICK);
+        // Determine target fill level
+        float target;
+        if (energyReceived > 0) {
+            // Actively receiving energy - show percentage of required energy
+            target = Math.min(1.0f, (float)energyReceived / ENERGY_NEEDED_PER_TICK);
+        } else if (powerAvailable) {
+            // Power is available but not being used (idle) - show full bar
+            target = 1.0f;
+        } else {
+            // No power available
+            target = 0.0f;
+        }
 
-        // Smoothly animate toward target in 5% steps
-        if (flowLevel < target) {
-            // Gas pedal pressed - fill up smoothly
-            flowLevel = Math.min(flowLevel + FLOW_STEP, target);
-        } else if (flowLevel > target) {
-            // Gas pedal released - drain down smoothly
-            flowLevel = Math.max(flowLevel - FLOW_STEP, target);
+        // On first frame, jump directly to target (no animation on GUI open)
+        if (firstFrame) {
+            flowLevel = target;
+            firstFrame = false;
+        } else {
+            // Smoothly animate toward target in 5% steps
+            if (flowLevel < target) {
+                // Gas pedal pressed - fill up smoothly
+                flowLevel = Math.min(flowLevel + FLOW_STEP, target);
+            } else if (flowLevel > target) {
+                // Gas pedal released - drain down smoothly
+                flowLevel = Math.max(flowLevel - FLOW_STEP, target);
+            }
         }
 
         if (flowLevel <= 0.0f) return;  // Don't render if empty

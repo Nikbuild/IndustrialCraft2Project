@@ -20,6 +20,7 @@ public class ElectricFurnaceMenu extends AbstractContainerMenu {
     private int progress = 0;
     private int energy = 0;
     private int energyReceivedLastTick = 0;
+    private int powerAvailable = 0;  // 0 = false, 1 = true (DataSlot uses int)
 
     // Constructor for server-side
     public ElectricFurnaceMenu(int id, Inventory playerInv, ElectricFurnaceBlockEntity blockEntity) {
@@ -74,6 +75,11 @@ public class ElectricFurnaceMenu extends AbstractContainerMenu {
             @Override public int get() { return blockEntity.getEnergyReceivedLastTick(); }
             @Override public void set(int v) { energyReceivedLastTick = v; }
         });
+
+        this.addDataSlot(new net.minecraft.world.inventory.DataSlot() {
+            @Override public int get() { return blockEntity.isPowerAvailable() ? 1 : 0; }
+            @Override public void set(int v) { powerAvailable = v; }
+        });
     }
 
     // Constructor for client-side (called when packet is received from server)
@@ -99,6 +105,10 @@ public class ElectricFurnaceMenu extends AbstractContainerMenu {
 
     public int getEnergyReceivedLastTick() {
         return energyReceivedLastTick;
+    }
+
+    public boolean isPowerAvailable() {
+        return powerAvailable != 0;
     }
 
     @Override

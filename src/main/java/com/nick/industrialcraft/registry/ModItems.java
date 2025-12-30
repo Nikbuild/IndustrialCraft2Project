@@ -1554,6 +1554,15 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> ELECTRIC_FURNACE_ITEM =
             ITEMS.registerSimpleBlockItem("electric_furnace", ModBlocks.ELECTRIC_FURNACE);
 
+    public static final DeferredItem<BlockItem> MACERATOR_ITEM =
+            ITEMS.registerSimpleBlockItem("macerator", ModBlocks.MACERATOR);
+
+    public static final DeferredItem<BlockItem> EXTRACTOR_ITEM =
+            ITEMS.registerSimpleBlockItem("extractor", ModBlocks.EXTRACTOR);
+
+    public static final DeferredItem<BlockItem> COMPRESSOR_ITEM =
+            ITEMS.registerSimpleBlockItem("compressor", ModBlocks.COMPRESSOR);
+
     public static final DeferredItem<BlockItem> REACTOR_CHAMBER_ITEM =
             ITEMS.registerSimpleBlockItem("reactor_chamber", ModBlocks.REACTOR_CHAMBER);
 

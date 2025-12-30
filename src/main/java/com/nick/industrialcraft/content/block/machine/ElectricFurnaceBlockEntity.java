@@ -46,39 +46,48 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
         }
     };
 
-    // IC2 Electric Furnace specifications (modified for balanced gameplay):
-    // - Energy consumption: 4 EU/tick while smelting (balanced for 4000 EU per coal requirement)
-    // - Operation time: 130 ticks per recipe (6.5 seconds)
-    // - Total EU per recipe: 520 EU
-    // - Energy storage capacity: 540 EU
-    // - Max input: 13 EU/t (matches generator output)
+    // IC2 Electric Furnace specifications:
+    // - Energy consumption: 4 EU/tick while smelting
+    // - Operation time: 100 ticks per recipe (5 seconds)
+    // - Total EU per recipe: 400 EU (10 smelts per coal)
+    // - Energy storage capacity: 416 EU
+    // - Max input: 10 EU/t (matches generator output)
 
-    private float progress = 0.0f;                // Current smelting progress (0-130, fractional for smooth scaling)
+    private float progress = 0.0f;                // Current smelting progress (0-100, fractional for smooth scaling)
     private int energy = 0;                       // Current stored energy (in EU) - kept for battery slot compatibility
     private boolean powered = false;              // Active smelting state
     private ItemStack lastInputItem = ItemStack.EMPTY; // Track what's being smelted to prevent exploits
+    private boolean lastInputWasValid = false;    // Cached validity check - prevents energy waste on invalid items
     private int energyReceivedThisTick = 0;       // Energy received in the current tick (accumulator)
     private int energyReceivedLastTick = 0;       // Energy received in the last tick (for GUI display)
+    private boolean powerAvailable = false;       // True when power is being offered (for GUI, even when idle)
+    private int powerAvailableThisTick = 0;       // Tracks power offered this tick (via simulate calls)
 
-    private static final int MAX_PROGRESS = 130;        // 130 ticks per operation (divisible by 2)
-    private static final int ENERGY_PER_TICK = 4;       // 4 EU consumed per operation tick (divisible by 2)
-    private static final int MAX_ENERGY = 540;          // Energy storage: 540 EU (divisible by 2, enough for 1 operation)
-    private static final int ENERGY_PER_OPERATION = 520; // Total EU per recipe: 520 EU (divisible by 2)
-    private static final int MAX_INPUT = 13;            // Max input: 13 EU/t (matches generator output)
+    private static final int MAX_PROGRESS = 100;        // 100 ticks per operation (5 seconds)
+    private static final int ENERGY_PER_TICK = 4;       // 4 EU consumed per operation tick
+    private static final int MAX_ENERGY = 416;          // Energy storage: 416 EU (400 + 16 buffer)
+    private static final int ENERGY_PER_OPERATION = 400; // Total EU per recipe: 400 EU (10 smelts per coal)
+    private static final int MAX_INPUT = 10;            // Max input: 10 EU/t (matches generator output)
 
     // NeoForge Energy Capability (for compatibility with other mods)
     private final IEnergyStorage energyStorage = new IEnergyStorage() {
         @Override
         public int receiveEnergy(int maxReceive, boolean simulate) {
-            // For proportional progress system: only request energy if we're actively smelting
-            // This allows fair distribution among multiple machines
-            ItemStack input = inventory.getStackInSlot(INPUT_SLOT);
-            if (input.isEmpty() || (level != null && !canSmelt(level, input))) {
-                return 0;  // Not smelting, don't request energy
+            // Track that power is being offered (for GUI display even when idle)
+            if (simulate && maxReceive > 0) {
+                powerAvailableThisTick = maxReceive;
             }
 
-            // Accept whatever energy is offered (generator handles fair distribution)
-            int toAccept = maxReceive;
+            // Use cached validity check - avoids recipe lookup during energy transfer
+            // which caused timing issues. The serverTick updates lastInputWasValid.
+            ItemStack input = inventory.getStackInSlot(INPUT_SLOT);
+            if (input.isEmpty() || !lastInputWasValid) {
+                return 0;  // No input or invalid item, don't request energy
+            }
+
+            // Cap at ENERGY_PER_TICK - machine only needs this much per tick to operate at full speed
+            // Prevents generator from dumping entire battery in one tick
+            int toAccept = Math.min(maxReceive, ENERGY_PER_TICK);
 
             if (!simulate && toAccept > 0) {
                 // Don't store energy in battery for proportional progress system
@@ -163,6 +172,10 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
         return energyReceivedLastTick;
     }
 
+    public boolean isPowerAvailable() {
+        return powerAvailable;
+    }
+
     public void setProgressClient(int progress) {
         this.progress = progress;
     }
@@ -188,24 +201,19 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
         // Check if we can smelt
         ItemStack input = be.inventory.getStackInSlot(INPUT_SLOT);
 
-        // Check if the input item changed - if so, reset progress (energy already spent is lost)
+        // Check if the input item changed - if so, reset progress and revalidate
         if (!ItemStack.matches(be.lastInputItem, input)) {
             be.progress = 0;
             be.lastInputItem = input.copy();
+            be.lastInputWasValid = !input.isEmpty() && be.canSmelt(level, input);
             needsUpdate = true;
         }
 
-        if (!input.isEmpty() && be.canSmelt(level, input)) {
+        if (!input.isEmpty() && be.lastInputWasValid) {
             // Proportional progress system: progress scales with energy received THIS tick
             // No minimum energy requirement - any energy contributes proportionally
             // Formula: progressIncrease = energyReceived / ENERGY_PER_TICK
             // Example: 3.25 EU/t → 3.25/4 = 0.8125 progress/tick (81.25% speed)
-
-            // Debug logging
-            if (level.getGameTime() % 20 == 0) {  // Log every second
-                System.out.println("DEBUG FURNACE @ " + pos + ": energyReceivedThisTick=" + be.energyReceivedThisTick +
-                                   ", storedEnergy=" + be.energy + ", progress=" + be.progress);
-            }
 
             if (be.energyReceivedThisTick > 0) {
                 // Calculate proportional progress based on energy flow THIS tick
@@ -234,6 +242,10 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
         // Copy accumulated energy to last tick for GUI display (do this at END of tick)
         be.energyReceivedLastTick = be.energyReceivedThisTick;
         be.energyReceivedThisTick = 0;  // Reset accumulator for next tick
+
+        // Update power available state (shows in GUI even when idle)
+        be.powerAvailable = be.powerAvailableThisTick > 0;
+        be.powerAvailableThisTick = 0;  // Reset for next tick
 
         // Update blockstate if powered state changed
         if (wasPowered != be.powered) {
@@ -312,6 +324,9 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
         powered = in.getBooleanOr("Powered", false);
         energyReceivedThisTick = in.getIntOr("EnergyReceivedThisTick", 0);
         energyReceivedLastTick = in.getIntOr("EnergyReceivedLastTick", 0);
-        lastInputItem = in.read("LastInputItem", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
+        // Don't load lastInputItem - force revalidation on first tick after world load
+        // This ensures lastInputWasValid gets set correctly even after mod updates
+        lastInputItem = ItemStack.EMPTY;
+        lastInputWasValid = false;
     }
 }

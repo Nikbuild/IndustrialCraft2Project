@@ -4,6 +4,9 @@ import com.nick.industrialcraft.IndustrialCraft;
 import com.nick.industrialcraft.content.block.generator.GeneratorMenu;
 import com.nick.industrialcraft.content.block.generator.GeothermalGeneratorMenu;
 import com.nick.industrialcraft.content.block.machine.ElectricFurnaceMenu;
+import com.nick.industrialcraft.content.block.machine.MaceratorMenu;
+import com.nick.industrialcraft.content.block.machine.ExtractorMenu;
+import com.nick.industrialcraft.content.block.machine.CompressorMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
@@ -33,5 +36,23 @@ public final class ModMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<ElectricFurnaceMenu>> ELECTRIC_FURNACE =
             MENUS.register("electric_furnace", () ->
                     IMenuTypeExtension.create((id, inv, buf) -> new ElectricFurnaceMenu(id, inv, buf))
+            );
+
+    // Macerator Menu
+    public static final DeferredHolder<MenuType<?>, MenuType<MaceratorMenu>> MACERATOR =
+            MENUS.register("macerator", () ->
+                    IMenuTypeExtension.create((id, inv, buf) -> new MaceratorMenu(id, inv, buf))
+            );
+
+    // Extractor Menu
+    public static final DeferredHolder<MenuType<?>, MenuType<ExtractorMenu>> EXTRACTOR =
+            MENUS.register("extractor", () ->
+                    IMenuTypeExtension.create((id, inv, buf) -> new ExtractorMenu(id, inv, buf))
+            );
+
+    // Compressor Menu
+    public static final DeferredHolder<MenuType<?>, MenuType<CompressorMenu>> COMPRESSOR =
+            MENUS.register("compressor", () ->
+                    IMenuTypeExtension.create((id, inv, buf) -> new CompressorMenu(id, inv, buf))
             );
 }

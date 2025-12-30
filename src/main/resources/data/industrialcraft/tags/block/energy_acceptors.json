@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "industrialcraft:electric_furnace"
+    "industrialcraft:electric_furnace",
+    "industrialcraft:macerator",
+    "industrialcraft:extractor",
+    "industrialcraft:compressor"
   ]
 }

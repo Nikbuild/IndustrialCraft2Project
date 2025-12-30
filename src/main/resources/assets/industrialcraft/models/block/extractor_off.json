@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "industrialcraft:block/extractor_top",
+    "front": "industrialcraft:block/extractor_front",
+    "side": "industrialcraft:block/extractor_side",
+    "bottom": "industrialcraft:block/macerator_bottom"
+  }
+}
