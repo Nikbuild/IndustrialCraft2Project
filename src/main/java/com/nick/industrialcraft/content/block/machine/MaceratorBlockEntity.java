@@ -99,6 +99,8 @@ public class MaceratorBlockEntity extends BlockEntity implements MenuProvider {
         addRecipe(Items.RED_SANDSTONE, Items.RED_SAND, 4);
         addRecipe(Items.NETHERRACK, Items.NETHER_BRICK, 1);
         addRecipe(Items.WHITE_WOOL, Items.STRING, 4);
+        addRecipe(Items.ICE, Items.SAND, 1);               // IC2: Ice -> Sand (line 52: pb.Q -> pb.E)
+        addRecipe(Items.SNOW_BLOCK, Items.SNOWBALL, 1);    // IC2: Snow Block -> Snowball (line 53: pb.aT -> yr.aD)
 
         // ========== IC2 SPECIFIC ==========
         addRecipe(ModItems.PLANT_BALL.get(), Items.DIRT, 8);           // IC2: Plant Ball -> 8x Dirt

@@ -1563,6 +1563,9 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> COMPRESSOR_ITEM =
             ITEMS.registerSimpleBlockItem("compressor", ModBlocks.COMPRESSOR);
 
+    public static final DeferredItem<BlockItem> RECYCLER_ITEM =
+            ITEMS.registerSimpleBlockItem("recycler", ModBlocks.RECYCLER);
+
     public static final DeferredItem<BlockItem> REACTOR_CHAMBER_ITEM =
             ITEMS.registerSimpleBlockItem("reactor_chamber", ModBlocks.REACTOR_CHAMBER);
 

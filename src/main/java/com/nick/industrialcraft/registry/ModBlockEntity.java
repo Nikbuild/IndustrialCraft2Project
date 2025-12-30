@@ -7,6 +7,7 @@ import com.nick.industrialcraft.content.block.machine.ElectricFurnaceBlockEntity
 import com.nick.industrialcraft.content.block.machine.MaceratorBlockEntity;
 import com.nick.industrialcraft.content.block.machine.ExtractorBlockEntity;
 import com.nick.industrialcraft.content.block.machine.CompressorBlockEntity;
+import com.nick.industrialcraft.content.block.machine.RecyclerBlockEntity;
 import com.nick.industrialcraft.content.block.cable.CableBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -73,6 +74,14 @@ public final class ModBlockEntity {
             BLOCK_ENTITY_TYPES.register("compressor", () ->
                     new BlockEntityType<>(CompressorBlockEntity::new, Set.of(
                             ModBlocks.COMPRESSOR.get()
+                    ))
+            );
+
+    // Recycler Block Entity
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RecyclerBlockEntity>> RECYCLER =
+            BLOCK_ENTITY_TYPES.register("recycler", () ->
+                    new BlockEntityType<>(RecyclerBlockEntity::new, Set.of(
+                            ModBlocks.RECYCLER.get()
                     ))
             );
 

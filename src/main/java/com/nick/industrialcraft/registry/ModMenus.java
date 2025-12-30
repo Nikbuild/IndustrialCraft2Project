@@ -7,6 +7,7 @@ import com.nick.industrialcraft.content.block.machine.ElectricFurnaceMenu;
 import com.nick.industrialcraft.content.block.machine.MaceratorMenu;
 import com.nick.industrialcraft.content.block.machine.ExtractorMenu;
 import com.nick.industrialcraft.content.block.machine.CompressorMenu;
+import com.nick.industrialcraft.content.block.machine.RecyclerMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
@@ -54,5 +55,11 @@ public final class ModMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<CompressorMenu>> COMPRESSOR =
             MENUS.register("compressor", () ->
                     IMenuTypeExtension.create((id, inv, buf) -> new CompressorMenu(id, inv, buf))
+            );
+
+    // Recycler Menu
+    public static final DeferredHolder<MenuType<?>, MenuType<RecyclerMenu>> RECYCLER =
+            MENUS.register("recycler", () ->
+                    IMenuTypeExtension.create((id, inv, buf) -> new RecyclerMenu(id, inv, buf))
             );
 }

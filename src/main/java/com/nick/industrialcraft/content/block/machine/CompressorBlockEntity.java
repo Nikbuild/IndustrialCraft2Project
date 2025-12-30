@@ -36,6 +36,7 @@ public class CompressorBlockEntity extends BlockEntity implements MenuProvider {
     public static final int SLOTS = 7;
 
     // Compressor recipes: input item -> output ItemStack
+    // IC2 only has IC2-specific recipes - vanilla compression (like coal->coal block) is done in crafting table
     private static final Map<Item, CompressorRecipe> RECIPES = new HashMap<>();
 
     static {
@@ -45,11 +46,13 @@ public class CompressorBlockEntity extends BlockEntity implements MenuProvider {
 
     private static void initRecipes() {
         // ========== IC2 Classic Compressor Recipes ==========
+        // Note: IC2 compressor is for IC2-specific items only
+        // Vanilla block compression (9 ingots -> block, etc.) is done in crafting table
 
         // Coal compression chain (IC2 classic)
-        addRecipe(Items.COAL, ModItems.COAL_BALL.get(), 1, 8);           // 8 coal -> coal ball
+        // Note: 8 coal -> coal ball is a CRAFTING recipe in IC2, not compressor
         addRecipe(ModItems.COAL_BALL.get(), ModItems.COMPRESSED_COAL_BALL.get(), 1); // coal ball -> compressed coal ball
-        addRecipe(ModItems.CARBON_MESH.get(), ModItems.CARBON_PLATE.get(), 1);   // carbon mesh -> carbon plate
+        addRecipe(ModItems.CARBON_MESH.get(), ModItems.CARBON_PLATE.get(), 1);       // carbon mesh -> carbon plate
 
         // Diamond creation (IC2 classic: coal chunk -> diamond)
         addRecipe(ModItems.COAL_CHUNK.get(), Items.DIAMOND, 1);          // coal chunk -> diamond
@@ -63,57 +66,20 @@ public class CompressorBlockEntity extends BlockEntity implements MenuProvider {
         // Metal processing (IC2 classic) - Mixed Metal Ingot -> Advanced Alloy
         addRecipe(ModItems.ALLOY_INGOT.get(), ModItems.ADVANCED_ALLOY.get(), 1);
 
-        // IC2 specific recipes
-        addRecipe(Items.GUNPOWDER, Items.FLINT, 1);                        // IC2: Gunpowder -> Flint
-        addRecipe(ModItems.WATER_CELL.get(), Items.SNOWBALL, 1);           // IC2: Water Cell -> Snowball
+        // IC2 specific recipes from source (TileEntityCompressor.java lines 43-53)
+        addRecipe(Items.SNOWBALL, Items.SNOW_BLOCK, 1, 3);                 // IC2: 3 snowballs -> snow block (line 45: pb.bb,3 -> pb.bA)
+        // Note: IC2 line 47 (yr.aD -> pb.aT = snowball -> ice) skipped - conflicts with 3 snowball -> snow block
+        // In old MC, pb.bb (snow layer block item) and yr.aD (snowball item) were distinct, but in modern MC they're the same
+        // Chain is: water cell -> snowball (x3) -> snow block -> ice, which achieves the same result
+        addRecipe(Items.SNOW_BLOCK, Items.ICE, 1);                         // IC2: snow block -> ice (alt path to ice)
+        addRecipe(ModItems.WATER_CELL.get(), Items.SNOWBALL, 1);           // IC2: water cell -> snowball (line 48)
 
-        // Stone/material compression
-        addRecipe(Items.SAND, Items.SANDSTONE, 1, 4);                    // 4 sand -> sandstone
-        addRecipe(Items.RED_SAND, Items.RED_SANDSTONE, 1, 4);            // 4 red sand -> red sandstone
-        addRecipe(Items.SNOWBALL, Items.SNOW_BLOCK, 1, 4);               // 4 snowballs -> snow block
-        addRecipe(Items.SNOW_BLOCK, Items.ICE, 1);                       // snow block -> ice
-        addRecipe(Items.ICE, Items.PACKED_ICE, 1);                       // ice -> packed ice
-        addRecipe(Items.PACKED_ICE, Items.BLUE_ICE, 1);                  // packed ice -> blue ice
+        // Construction foam (line 53)
+        addRecipe(ModItems.FOAM_ITEM.get(), ModItems.CONSTRUCTION_FOAM_PELLET.get(), 1); // IC2: construction foam -> pellet
 
-        // Clay compression
-        addRecipe(Items.CLAY_BALL, Items.CLAY, 1, 4);                    // 4 clay balls -> clay block
-
-        // Glowstone compression
-        addRecipe(Items.GLOWSTONE_DUST, Items.GLOWSTONE, 1, 4);          // 4 glowstone dust -> glowstone
-
-        // Brick compression
-        addRecipe(Items.BRICK, Items.BRICKS, 1, 4);                      // 4 bricks -> brick block
-        addRecipe(Items.NETHER_BRICK, Items.NETHER_BRICKS, 1, 4);        // 4 nether bricks -> nether brick block
-
-        // Quartz compression
-        addRecipe(Items.QUARTZ, Items.QUARTZ_BLOCK, 1, 4);               // 4 quartz -> quartz block
-
-        // Copper block
-        addRecipe(Items.COPPER_INGOT, Items.COPPER_BLOCK, 1, 9);         // 9 copper -> copper block
-
-        // Iron block
-        addRecipe(Items.IRON_INGOT, Items.IRON_BLOCK, 1, 9);             // 9 iron -> iron block
-
-        // Gold block
-        addRecipe(Items.GOLD_INGOT, Items.GOLD_BLOCK, 1, 9);             // 9 gold -> gold block
-
-        // Diamond block
-        addRecipe(Items.DIAMOND, Items.DIAMOND_BLOCK, 1, 9);             // 9 diamonds -> diamond block
-
-        // Lapis block
-        addRecipe(Items.LAPIS_LAZULI, Items.LAPIS_BLOCK, 1, 9);          // 9 lapis -> lapis block
-
-        // Redstone block
-        addRecipe(Items.REDSTONE, Items.REDSTONE_BLOCK, 1, 9);           // 9 redstone -> redstone block
-
-        // Emerald block
-        addRecipe(Items.EMERALD, Items.EMERALD_BLOCK, 1, 9);             // 9 emeralds -> emerald block
-
-        // Netherite block
-        addRecipe(Items.NETHERITE_INGOT, Items.NETHERITE_BLOCK, 1, 9);   // 9 netherite -> netherite block
-
-        // Coal block
-        addRecipe(Items.COAL, Items.COAL_BLOCK, 1, 9);                   // 9 coal -> coal block (alternative recipe)
+        // Additional IC2 recipes from Tekkit Classic wiki
+        addRecipe(Items.SAND, Items.SANDSTONE, 1);                         // IC2: sand -> sandstone
+        addRecipe(Items.NETHERRACK, Items.NETHER_BRICK, 1);                // IC2: netherrack -> nether brick
     }
 
     private static void addRecipe(Item input, Item output, int outputCount) {

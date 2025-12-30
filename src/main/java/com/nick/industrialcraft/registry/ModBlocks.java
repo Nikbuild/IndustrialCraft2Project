@@ -17,6 +17,7 @@ import com.nick.industrialcraft.content.block.generator.GeothermalGeneratorBlock
 import com.nick.industrialcraft.content.block.machine.ElectricFurnaceBlock;
 import com.nick.industrialcraft.content.block.machine.CompressorBlock;
 import com.nick.industrialcraft.content.block.machine.ExtractorBlock;
+import com.nick.industrialcraft.content.block.machine.RecyclerBlock;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -629,6 +630,23 @@ public final class ModBlocks {
                                     ResourceLocation.fromNamespaceAndPath(
                                             IndustrialCraft.MODID,
                                             "compressor"
+                                    )
+                            ))
+            )
+    );
+
+    public static final DeferredBlock<Block> RECYCLER = BLOCKS.register(
+            "recycler",
+            () -> new RecyclerBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.METAL)
+                            .strength(3.0f)
+                            .requiresCorrectToolForDrops()
+                            .setId(ResourceKey.create(
+                                    Registries.BLOCK,
+                                    ResourceLocation.fromNamespaceAndPath(
+                                            IndustrialCraft.MODID,
+                                            "recycler"
                                     )
                             ))
             )

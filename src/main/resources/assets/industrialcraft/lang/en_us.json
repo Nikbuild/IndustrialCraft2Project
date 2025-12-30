@@ -4,6 +4,8 @@
   "block.industrialcraft.extractor": "Extractor",
   "block.industrialcraft.compressor": "Compressor",
   "container.industrialcraft.compressor": "Compressor",
+  "block.industrialcraft.recycler": "Recycler",
+  "container.industrialcraft.recycler": "Recycler",
 
   "item.industrialcraft.tin_ingot": "Tin Ingot",
   "item.industrialcraft.lead_ingot": "Lead Ingot",

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "industrialcraft:block/recycler_top",
+    "front": "industrialcraft:block/recycler_front_active",
+    "side": "industrialcraft:block/recycler_side"
+  }
+}
