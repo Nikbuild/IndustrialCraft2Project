@@ -1566,6 +1566,12 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> RECYCLER_ITEM =
             ITEMS.registerSimpleBlockItem("recycler", ModBlocks.RECYCLER);
 
+    public static final DeferredItem<BlockItem> INDUCTION_FURNACE_ITEM =
+            ITEMS.registerSimpleBlockItem("induction_furnace", ModBlocks.INDUCTION_FURNACE);
+
+    public static final DeferredItem<BlockItem> BATBOX_ITEM =
+            ITEMS.registerSimpleBlockItem("batbox", ModBlocks.BATBOX);
+
     public static final DeferredItem<BlockItem> REACTOR_CHAMBER_ITEM =
             ITEMS.registerSimpleBlockItem("reactor_chamber", ModBlocks.REACTOR_CHAMBER);
 

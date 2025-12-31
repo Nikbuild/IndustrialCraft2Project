@@ -1,0 +1,23 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:raw_iron",
+    "minecraft:raw_gold",
+    "minecraft:raw_copper",
+    "minecraft:iron_ore",
+    "minecraft:gold_ore",
+    "minecraft:copper_ore",
+    "minecraft:deepslate_iron_ore",
+    "minecraft:deepslate_gold_ore",
+    "minecraft:deepslate_copper_ore",
+    "minecraft:nether_gold_ore",
+    "minecraft:ancient_debris",
+    "industrialcraft:iron_dust",
+    "industrialcraft:gold_dust",
+    "industrialcraft:copper_dust",
+    "industrialcraft:tin_dust",
+    "industrialcraft:silver_dust",
+    "industrialcraft:lead_dust",
+    "industrialcraft:bronze_dust"
+  ]
+}

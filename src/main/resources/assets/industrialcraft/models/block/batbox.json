@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "industrialcraft:block/batbox_side",
+    "down": "industrialcraft:block/batbox_side",
+    "up": "industrialcraft:block/batbox_side",
+    "north": "industrialcraft:block/batbox_output",
+    "south": "industrialcraft:block/batbox_side",
+    "west": "industrialcraft:block/batbox_side",
+    "east": "industrialcraft:block/batbox_side"
+  }
+}

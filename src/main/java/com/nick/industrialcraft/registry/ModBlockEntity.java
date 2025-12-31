@@ -8,6 +8,8 @@ import com.nick.industrialcraft.content.block.machine.MaceratorBlockEntity;
 import com.nick.industrialcraft.content.block.machine.ExtractorBlockEntity;
 import com.nick.industrialcraft.content.block.machine.CompressorBlockEntity;
 import com.nick.industrialcraft.content.block.machine.RecyclerBlockEntity;
+import com.nick.industrialcraft.content.block.machine.InductionFurnaceBlockEntity;
+import com.nick.industrialcraft.content.block.storage.BatBoxBlockEntity;
 import com.nick.industrialcraft.content.block.cable.CableBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -82,6 +84,22 @@ public final class ModBlockEntity {
             BLOCK_ENTITY_TYPES.register("recycler", () ->
                     new BlockEntityType<>(RecyclerBlockEntity::new, Set.of(
                             ModBlocks.RECYCLER.get()
+                    ))
+            );
+
+    // Induction Furnace Block Entity
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<InductionFurnaceBlockEntity>> INDUCTION_FURNACE =
+            BLOCK_ENTITY_TYPES.register("induction_furnace", () ->
+                    new BlockEntityType<>(InductionFurnaceBlockEntity::new, Set.of(
+                            ModBlocks.INDUCTION_FURNACE.get()
+                    ))
+            );
+
+    // BatBox Block Entity
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BatBoxBlockEntity>> BATBOX =
+            BLOCK_ENTITY_TYPES.register("batbox", () ->
+                    new BlockEntityType<>(BatBoxBlockEntity::new, Set.of(
+                            ModBlocks.BATBOX.get()
                     ))
             );
 

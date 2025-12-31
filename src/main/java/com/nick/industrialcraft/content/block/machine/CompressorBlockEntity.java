@@ -139,10 +139,13 @@ public class CompressorBlockEntity extends BlockEntity implements MenuProvider {
     private final IEnergyStorage energyStorage = new IEnergyStorage() {
         @Override
         public int receiveEnergy(int maxReceive, boolean simulate) {
+            // Always track power being offered for LED indicator (even when idle)
             if (simulate && maxReceive > 0) {
-                powerAvailableThisTick = maxReceive;
+                powerAvailableThisTick = Math.min(maxReceive, ENERGY_PER_TICK);
+                return powerAvailableThisTick;  // Report we COULD accept this much
             }
 
+            // For actual energy transfer, only accept if we have valid work to do
             ItemStack input = inventory.getStackInSlot(INPUT_SLOT);
             if (input.isEmpty() || !lastInputWasValid) {
                 return 0;
@@ -150,7 +153,7 @@ public class CompressorBlockEntity extends BlockEntity implements MenuProvider {
 
             int toAccept = Math.min(maxReceive, ENERGY_PER_TICK);
 
-            if (!simulate && toAccept > 0) {
+            if (toAccept > 0) {
                 energyReceivedThisTick += toAccept;
                 setChanged();
             }

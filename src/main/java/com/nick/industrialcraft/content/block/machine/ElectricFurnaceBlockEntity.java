@@ -73,26 +73,25 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
     private final IEnergyStorage energyStorage = new IEnergyStorage() {
         @Override
         public int receiveEnergy(int maxReceive, boolean simulate) {
-            // Track that power is being offered (for GUI display even when idle)
+            // Always track power being offered for LED indicator (even when idle)
+            // This allows the energy bar to show "power available" as an LED
             if (simulate && maxReceive > 0) {
-                powerAvailableThisTick = maxReceive;
+                powerAvailableThisTick = Math.min(maxReceive, ENERGY_PER_TICK);
+                return powerAvailableThisTick;  // Report we COULD accept this much
             }
 
-            // Use cached validity check - avoids recipe lookup during energy transfer
-            // which caused timing issues. The serverTick updates lastInputWasValid.
+            // For actual energy transfer, only accept if we have valid work to do
             ItemStack input = inventory.getStackInSlot(INPUT_SLOT);
             if (input.isEmpty() || !lastInputWasValid) {
-                return 0;  // No input or invalid item, don't request energy
+                return 0;  // No input or invalid item, don't actually consume energy
             }
 
             // Cap at ENERGY_PER_TICK - machine only needs this much per tick to operate at full speed
-            // Prevents generator from dumping entire battery in one tick
             int toAccept = Math.min(maxReceive, ENERGY_PER_TICK);
 
-            if (!simulate && toAccept > 0) {
-                // Don't store energy in battery for proportional progress system
-                // Just track what's flowing through for GUI/progress calculation
-                energyReceivedThisTick += toAccept;  // Accumulate energy received this tick
+            if (toAccept > 0) {
+                // Track energy flowing through for progress calculation
+                energyReceivedThisTick += toAccept;
                 setChanged();
             }
 

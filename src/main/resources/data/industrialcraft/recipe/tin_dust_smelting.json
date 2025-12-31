@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": "industrialcraft:tin_dust",
+  "result": {
+    "id": "industrialcraft:tin_ingot"
+  },
+  "experience": 0.7,
+  "cookingtime": 200
+}

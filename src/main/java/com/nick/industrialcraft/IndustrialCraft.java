@@ -275,6 +275,8 @@ public class IndustrialCraft {
                                 out.accept(ModItems.EXTRACTOR_ITEM.get());
                                 out.accept(ModItems.COMPRESSOR_ITEM.get());
                                 out.accept(ModItems.RECYCLER_ITEM.get());
+                                out.accept(ModItems.INDUCTION_FURNACE_ITEM.get());
+                                out.accept(ModItems.BATBOX_ITEM.get());
                                 out.accept(ModItems.REACTOR_CHAMBER_ITEM.get());
                                 out.accept(ModItems.ELECTRIC_BLOCK_ITEM.get());
                                 out.accept(ModItems.MACHINE_ITEM.get());
@@ -328,6 +330,8 @@ public class IndustrialCraft {
         com.nick.industrialcraft.content.block.machine.ExtractorBlock.registerCapabilities(event);
         com.nick.industrialcraft.content.block.machine.CompressorBlock.registerCapabilities(event);
         com.nick.industrialcraft.content.block.machine.RecyclerBlock.registerCapabilities(event);
+        com.nick.industrialcraft.content.block.machine.InductionFurnaceBlock.registerCapabilities(event);
+        com.nick.industrialcraft.content.block.storage.BatBoxBlock.registerCapabilities(event);
         com.nick.industrialcraft.content.block.cable.BaseCableBlock.registerCapabilities(event);
     }
 

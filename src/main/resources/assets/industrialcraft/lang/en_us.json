@@ -6,6 +6,10 @@
   "container.industrialcraft.compressor": "Compressor",
   "block.industrialcraft.recycler": "Recycler",
   "container.industrialcraft.recycler": "Recycler",
+  "block.industrialcraft.induction_furnace": "Induction Furnace",
+  "container.industrialcraft.induction_furnace": "Induction Furnace",
+  "block.industrialcraft.batbox": "BatBox",
+  "container.industrialcraft.batbox": "BatBox",
 
   "item.industrialcraft.tin_ingot": "Tin Ingot",
   "item.industrialcraft.lead_ingot": "Lead Ingot",

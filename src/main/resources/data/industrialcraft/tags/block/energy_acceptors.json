@@ -4,6 +4,9 @@
     "industrialcraft:electric_furnace",
     "industrialcraft:macerator",
     "industrialcraft:extractor",
-    "industrialcraft:compressor"
+    "industrialcraft:compressor",
+    "industrialcraft:induction_furnace",
+    "industrialcraft:recycler",
+    "industrialcraft:batbox"
   ]
 }

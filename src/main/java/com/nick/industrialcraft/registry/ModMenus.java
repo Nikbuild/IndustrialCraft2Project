@@ -8,6 +8,8 @@ import com.nick.industrialcraft.content.block.machine.MaceratorMenu;
 import com.nick.industrialcraft.content.block.machine.ExtractorMenu;
 import com.nick.industrialcraft.content.block.machine.CompressorMenu;
 import com.nick.industrialcraft.content.block.machine.RecyclerMenu;
+import com.nick.industrialcraft.content.block.machine.InductionFurnaceMenu;
+import com.nick.industrialcraft.content.block.storage.BatBoxMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
@@ -61,5 +63,17 @@ public final class ModMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<RecyclerMenu>> RECYCLER =
             MENUS.register("recycler", () ->
                     IMenuTypeExtension.create((id, inv, buf) -> new RecyclerMenu(id, inv, buf))
+            );
+
+    // Induction Furnace Menu
+    public static final DeferredHolder<MenuType<?>, MenuType<InductionFurnaceMenu>> INDUCTION_FURNACE =
+            MENUS.register("induction_furnace", () ->
+                    IMenuTypeExtension.create((id, inv, buf) -> new InductionFurnaceMenu(id, inv, buf))
+            );
+
+    // BatBox Menu
+    public static final DeferredHolder<MenuType<?>, MenuType<BatBoxMenu>> BATBOX =
+            MENUS.register("batbox", () ->
+                    IMenuTypeExtension.create((id, inv, buf) -> new BatBoxMenu(id, inv, buf))
             );
 }

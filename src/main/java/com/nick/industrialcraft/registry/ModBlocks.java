@@ -18,6 +18,8 @@ import com.nick.industrialcraft.content.block.machine.ElectricFurnaceBlock;
 import com.nick.industrialcraft.content.block.machine.CompressorBlock;
 import com.nick.industrialcraft.content.block.machine.ExtractorBlock;
 import com.nick.industrialcraft.content.block.machine.RecyclerBlock;
+import com.nick.industrialcraft.content.block.machine.InductionFurnaceBlock;
+import com.nick.industrialcraft.content.block.storage.BatBoxBlock;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -647,6 +649,40 @@ public final class ModBlocks {
                                     ResourceLocation.fromNamespaceAndPath(
                                             IndustrialCraft.MODID,
                                             "recycler"
+                                    )
+                            ))
+            )
+    );
+
+    public static final DeferredBlock<Block> INDUCTION_FURNACE = BLOCKS.register(
+            "induction_furnace",
+            () -> new InductionFurnaceBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.METAL)
+                            .strength(3.0f)
+                            .requiresCorrectToolForDrops()
+                            .setId(ResourceKey.create(
+                                    Registries.BLOCK,
+                                    ResourceLocation.fromNamespaceAndPath(
+                                            IndustrialCraft.MODID,
+                                            "induction_furnace"
+                                    )
+                            ))
+            )
+    );
+
+    public static final DeferredBlock<Block> BATBOX = BLOCKS.register(
+            "batbox",
+            () -> new BatBoxBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.WOOD)
+                            .strength(2.0f)
+                            .requiresCorrectToolForDrops()
+                            .setId(ResourceKey.create(
+                                    Registries.BLOCK,
+                                    ResourceLocation.fromNamespaceAndPath(
+                                            IndustrialCraft.MODID,
+                                            "batbox"
                                     )
                             ))
             )

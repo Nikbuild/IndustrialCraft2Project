@@ -88,21 +88,22 @@ public class RecyclerBlockEntity extends BlockEntity implements MenuProvider {
     private final IEnergyStorage energyStorage = new IEnergyStorage() {
         @Override
         public int receiveEnergy(int maxReceive, boolean simulate) {
-            // Track that power is being offered (for GUI display even when idle)
+            // Always track power being offered for LED indicator (even when idle)
             if (simulate && maxReceive > 0) {
-                powerAvailableThisTick = maxReceive;
+                powerAvailableThisTick = Math.min(maxReceive, ENERGY_PER_TICK);
+                return powerAvailableThisTick;  // Report we COULD accept this much
             }
 
-            // Use cached validity check
+            // For actual energy transfer, only accept if we have valid work to do
             ItemStack input = inventory.getStackInSlot(INPUT_SLOT);
             if (input.isEmpty() || !lastInputWasValid) {
-                return 0;  // No input or invalid item, don't request energy
+                return 0;  // No input or invalid item, don't actually consume energy
             }
 
             // Cap at ENERGY_PER_TICK - machine only needs this much per tick to operate at full speed
             int toAccept = Math.min(maxReceive, ENERGY_PER_TICK);
 
-            if (!simulate && toAccept > 0) {
+            if (toAccept > 0) {
                 energyReceivedThisTick += toAccept;
                 setChanged();
             }

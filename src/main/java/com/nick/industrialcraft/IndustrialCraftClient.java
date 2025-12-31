@@ -7,6 +7,8 @@ import com.nick.industrialcraft.client.screen.MaceratorScreen;
 import com.nick.industrialcraft.client.screen.ExtractorScreen;
 import com.nick.industrialcraft.client.screen.CompressorScreen;
 import com.nick.industrialcraft.client.screen.RecyclerScreen;
+import com.nick.industrialcraft.client.screen.InductionFurnaceScreen;
+import com.nick.industrialcraft.client.screen.BatBoxScreen;
 import com.nick.industrialcraft.registry.ModMenus;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -41,5 +43,7 @@ public final class IndustrialCraftClient {
         event.register(ModMenus.EXTRACTOR.get(), ExtractorScreen::new);
         event.register(ModMenus.COMPRESSOR.get(), CompressorScreen::new);
         event.register(ModMenus.RECYCLER.get(), RecyclerScreen::new);
+        event.register(ModMenus.INDUCTION_FURNACE.get(), InductionFurnaceScreen::new);
+        event.register(ModMenus.BATBOX.get(), BatBoxScreen::new);
     }
 }
