@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": "minecraft:iron_ingot",
+  "result": {
+    "id": "industrialcraft:refined_iron_ingot"
+  },
+  "experience": 0.7,
+  "cookingtime": 200
+}

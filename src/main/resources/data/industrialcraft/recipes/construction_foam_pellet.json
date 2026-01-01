@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CSC",
+    "CWC",
+    "CSC"
+  ],
+  "key": {
+    "C": {
+      "item": "industrialcraft:clay_dust"
+    },
+    "S": {
+      "item": "minecraft:sand"
+    },
+    "W": {
+      "item": "minecraft:water_bucket"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:construction_foam_pellet",
+    "count": 4
+  }
+}

@@ -3,6 +3,7 @@ package com.nick.industrialcraft.content.block.storage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -22,6 +23,8 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
 import com.nick.industrialcraft.registry.ModBlockEntity;
+import com.nick.industrialcraft.api.energy.OvervoltageHandler;
+import com.nick.industrialcraft.api.energy.EnergyNetworkManager;
 
 /**
  * BatBox - Basic energy storage block (LV tier)
@@ -86,6 +89,9 @@ public class BatBoxBlock extends Block implements EntityBlock {
     @Override
     public void destroy(LevelAccessor level, BlockPos pos, BlockState state) {
         if (level instanceof Level realLevel) {
+            if (!realLevel.isClientSide()) {
+                EnergyNetworkManager.invalidateAt(realLevel, pos);
+            }
             BlockEntity be = realLevel.getBlockEntity(pos);
             if (be instanceof BatBoxBlockEntity batBox) {
                 // Drop all inventory items
@@ -99,6 +105,22 @@ public class BatBoxBlock extends Block implements EntityBlock {
             }
         }
         super.destroy(level, pos, state);
+    }
+
+    // ========== Overvoltage Check on Placement ==========
+
+    @Override
+    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
+        super.onPlace(state, level, pos, oldState, isMoving);
+        if (!level.isClientSide && !isMoving) {
+            EnergyNetworkManager.invalidateAt(level, pos);
+            level.scheduleTick(pos, this, 1);
+        }
+    }
+
+    @Override
+    protected void tick(BlockState state, net.minecraft.server.level.ServerLevel level, BlockPos pos, RandomSource random) {
+        OvervoltageHandler.checkOnPlacement(level, pos);
     }
 
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {

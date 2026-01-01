@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "T T",
+    " I ",
+    " I "
+  ],
+  "key": {
+    "T": {
+      "item": "industrialcraft:tin_ingot"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:construction_foam_sprayer",
+    "count": 1
+  }
+}

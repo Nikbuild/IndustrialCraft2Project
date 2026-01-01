@@ -19,11 +19,13 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import com.nick.industrialcraft.registry.ModBlockEntity;
 import com.nick.industrialcraft.registry.ModItems;
+import com.nick.industrialcraft.api.energy.EnergyTier;
+import com.nick.industrialcraft.api.energy.IEnergyTier;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ExtractorBlockEntity extends BlockEntity implements MenuProvider {
+public class ExtractorBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier {
 
     public static final int INPUT_SLOT = 0;
     public static final int BATTERY_SLOT = 1;
@@ -47,7 +49,13 @@ public class ExtractorBlockEntity extends BlockEntity implements MenuProvider {
         addRecipe(ModItems.STICKY_RESIN.get(), ModItems.RUBBER.get(), 3);
 
         // Rubber wood -> Rubber (1x)
-        addRecipe(Items.OAK_LOG, ModItems.RUBBER.get(), 1);  // Placeholder until rubber wood is implemented
+        addRecipe(ModItems.RUBBER_WOOD_ITEM.get(), ModItems.RUBBER.get(), 1);
+
+        // Resin-Filled Rubber Wood -> Rubber (1x) + Sticky Resin (3x) via dual output
+        // For now, just give 4 rubber total (equivalent value: 1 rubber + 3 resin = 1 + 3*3/3 = 4 rubber worth)
+        // Actually, let's give rubber + sticky resin. We need a multi-output system.
+        // Simpler: Resin-Filled Rubber Wood -> 4 Rubber (consistent, no RNG)
+        addRecipe(ModItems.RESIN_FILLED_RUBBER_WOOD_ITEM.get(), ModItems.RUBBER.get(), 4);
 
         // ========== OTHER EXTRACTIONS ==========
         // Slime ball -> Rubber (can substitute for sticky resin)
@@ -202,7 +210,7 @@ public class ExtractorBlockEntity extends BlockEntity implements MenuProvider {
 
     @Override
     public Component getDisplayName() {
-        return Component.literal("Extractor");
+        return Component.translatable("container.industrialcraft.extractor");
     }
 
     @Override
@@ -292,6 +300,13 @@ public class ExtractorBlockEntity extends BlockEntity implements MenuProvider {
         } else {
             output.grow(result.getCount());
         }
+    }
+
+    // ========== Energy Tier Implementation ==========
+
+    @Override
+    public EnergyTier getEnergyTier() {
+        return EnergyTier.LV;  // Extractor is LV tier (max 32 EU/t input)
     }
 
     // ========== Server Tick ==========

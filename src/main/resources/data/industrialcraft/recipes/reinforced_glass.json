@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GAG",
+    "AGA",
+    "GAG"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "A": {
+      "item": "industrialcraft:advanced_alloy"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:reinforced_glass",
+    "count": 4
+  }
+}

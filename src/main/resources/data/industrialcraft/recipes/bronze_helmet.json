@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BBB",
+    "B B"
+  ],
+  "key": {
+    "B": {
+      "item": "industrialcraft:bronze_ingot"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:bronze_helmet",
+    "count": 1
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " T ",
+    " C ",
+    " B "
+  ],
+  "key": {
+    "T": {
+      "item": "industrialcraft:treetap"
+    },
+    "C": {
+      "item": "industrialcraft:electronic_circuit"
+    },
+    "B": {
+      "item": "industrialcraft:re_battery"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:electric_treetap",
+    "count": 1
+  }
+}

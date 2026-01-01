@@ -17,12 +17,14 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.capabilities.Capabilities;
 
 import com.nick.industrialcraft.registry.ModBlockEntity;
-import com.nick.industrialcraft.content.block.cable.BaseCableBlock;
-import com.nick.industrialcraft.content.block.cable.CableBlockEntity;
+import com.nick.industrialcraft.api.energy.EnergyTier;
+import com.nick.industrialcraft.api.energy.IEnergyTier;
+import com.nick.industrialcraft.api.energy.EnergyNetworkManager;
+import com.nick.industrialcraft.api.energy.EnergyNetworkManager.MachineConnection;
 
 import java.util.*;
 
-public class GeneratorBlockEntity extends BlockEntity implements MenuProvider {
+public class GeneratorBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier {
 
     public static final int FUEL_SLOT = 0;
     public static final int SLOTS = 1;
@@ -97,7 +99,7 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider {
 
     @Override
     public Component getDisplayName() {
-        return Component.literal("Generator");
+        return Component.translatable("container.industrialcraft.generator");
     }
 
     @Override
@@ -141,32 +143,36 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider {
         this.powered = powered;
     }
 
+    // ========== Energy Tier Implementation ==========
+
+    @Override
+    public EnergyTier getEnergyTier() {
+        return EnergyTier.LV;  // Generator is LV tier (outputs at 32V standard)
+    }
+
+    // Note: getOutputPacketSize() defaults to tier voltage (32V for LV)
+    // The 10 EU/t is the WATTAGE (power generated), not the voltage
+
     // ========== Energy Transfer Logic (Simultaneous Distribution) ==========
 
     /**
      * Output energy to machines using simultaneous distribution like original IC2.
+     * Uses cached network scanning for optimal performance.
      * Every tick, ALL connected machines draw energy simultaneously from the generator's battery.
-     * Generator produces 13 EU/tick, can power ~3.25 furnaces (4 EU/tick each) in steady state.
-     * With 4+ furnaces, battery drains. With 3 or less, battery charges.
+     * Generator produces 10 EU/tick, can power ~2.5 furnaces (4 EU/tick each) in steady state.
      */
     private void outputEnergy(Level level, BlockPos pos) {
-        // Scan the cable network to find all connected machines
-        Set<BlockPos> visitedCables = new HashSet<>();
-        List<MachineConnection> machines = new ArrayList<>();
+        // Use cached network manager for O(1) amortized performance
+        List<MachineConnection> machines = EnergyNetworkManager.getConnectedMachines(
+            level, pos, Direction.values()
+        );
 
-        // Start scanning from all 6 adjacent positions
-        for (Direction dir : Direction.values()) {
-            BlockPos neighborPos = pos.relative(dir);
-            scanNetwork(level, neighborPos, visitedCables, machines);
-        }
-
-        if (machines.isEmpty()) return;
-        if (energy <= 0) return;
+        if (machines.isEmpty() || energy <= 0) return;
 
         // Filter to only machines that actually want energy
         List<MachineConnection> needyMachines = new ArrayList<>();
         for (MachineConnection machine : machines) {
-            int wants = machine.storage.receiveEnergy(Integer.MAX_VALUE, true);
+            int wants = machine.storage().receiveEnergy(Integer.MAX_VALUE, true);
             if (wants > 0) {
                 needyMachines.add(machine);
             }
@@ -175,14 +181,25 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider {
         if (needyMachines.isEmpty()) return;
 
         // Fair distribution: split available energy equally among all machines that want it
-        // Example: 13 EU battery, 4 furnaces → each gets 3 EU (13/4 = 3.25, rounded down)
         int energyPerMachine = energy / needyMachines.size();
         int totalTransferred = 0;
 
+        // Get our output packet size (for tier checking)
+        int packetSize = getOutputPacketSize();
+
         // Transfer to each machine
         for (MachineConnection machine : needyMachines) {
+            // Check tier compatibility before transferring
+            if (machine.blockEntity() instanceof IEnergyTier tieredMachine) {
+                if (!tieredMachine.canSafelyReceive(packetSize)) {
+                    // Machine can't handle this voltage - EXPLODE!
+                    explodeMachine(level, machine.pos());
+                    continue;  // Don't transfer to exploded machine
+                }
+            }
+
             // Give each machine its fair share
-            int transferred = machine.storage.receiveEnergy(energyPerMachine, false);
+            int transferred = machine.storage().receiveEnergy(energyPerMachine, false);
 
             if (transferred > 0) {
                 energy -= transferred;
@@ -196,63 +213,18 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     /**
-     * Recursively scan the cable network to find all connected machines.
+     * Cause an explosion at the given position (machine received packet too large for its tier).
      */
-    private void scanNetwork(Level level, BlockPos pos, Set<BlockPos> visitedCables, List<MachineConnection> machines) {
-        BlockState state = level.getBlockState(pos);
-
-        // If this is a cable, explore its connections
-        if (state.getBlock() instanceof BaseCableBlock) {
-            // Skip if we've already visited this cable
-            if (visitedCables.contains(pos)) return;
-            visitedCables.add(pos);
-
-            // Get the cable block entity to check connections
-            BlockEntity be = level.getBlockEntity(pos);
-            if (!(be instanceof CableBlockEntity cable)) return;
-
-            // Check all 6 directions from this cable
-            for (Direction dir : Direction.values()) {
-                if (!cable.isConnectedInDirection(state, dir)) continue;
-
-                BlockPos neighborPos = pos.relative(dir);
-                scanNetwork(level, neighborPos, visitedCables, machines);
-            }
-        }
-        // If this is a machine (not a cable), check if it can receive energy
-        else {
-            // Check if we've already added this machine position (prevent duplicates)
-            for (MachineConnection existing : machines) {
-                if (existing.pos.equals(pos)) {
-                    return;  // Already in the list, skip
-                }
-            }
-
-            // Try to get energy capability
-            IEnergyStorage neighborEnergy = level.getCapability(
-                Capabilities.EnergyStorage.BLOCK,
-                pos,
-                null
-            );
-
-            if (neighborEnergy != null && neighborEnergy.canReceive()) {
-                // Add this machine to the list (guaranteed unique now)
-                machines.add(new MachineConnection(pos, neighborEnergy));
-            }
-        }
-    }
-
-    /**
-     * Helper class to store information about connected machines.
-     */
-    private static class MachineConnection {
-        final BlockPos pos;
-        final IEnergyStorage storage;
-
-        MachineConnection(BlockPos pos, IEnergyStorage storage) {
-            this.pos = pos;
-            this.storage = storage;
-        }
+    private void explodeMachine(Level level, BlockPos machinePos) {
+        // Small explosion like IC2 (size 0.5-1.5)
+        level.explode(
+            null,  // No entity caused the explosion
+            machinePos.getX() + 0.5,
+            machinePos.getY() + 0.5,
+            machinePos.getZ() + 0.5,
+            1.0f,  // Explosion radius (small, just destroys the machine)
+            Level.ExplosionInteraction.BLOCK  // Destroys blocks
+        );
     }
 
     // ========== Server Tick ==========

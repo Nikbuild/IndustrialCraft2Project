@@ -9,6 +9,7 @@ import com.nick.industrialcraft.content.block.machine.ExtractorBlockEntity;
 import com.nick.industrialcraft.content.block.machine.CompressorBlockEntity;
 import com.nick.industrialcraft.content.block.machine.RecyclerBlockEntity;
 import com.nick.industrialcraft.content.block.machine.InductionFurnaceBlockEntity;
+import com.nick.industrialcraft.content.block.machine.CanningMachineBlockEntity;
 import com.nick.industrialcraft.content.block.storage.BatBoxBlockEntity;
 import com.nick.industrialcraft.content.block.cable.CableBlockEntity;
 import net.minecraft.core.registries.Registries;
@@ -100,6 +101,14 @@ public final class ModBlockEntity {
             BLOCK_ENTITY_TYPES.register("batbox", () ->
                     new BlockEntityType<>(BatBoxBlockEntity::new, Set.of(
                             ModBlocks.BATBOX.get()
+                    ))
+            );
+
+    // Canning Machine Block Entity
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CanningMachineBlockEntity>> CANNING_MACHINE =
+            BLOCK_ENTITY_TYPES.register("canning_machine", () ->
+                    new BlockEntityType<>(CanningMachineBlockEntity::new, Set.of(
+                            ModBlocks.CANNING_MACHINE.get()
                     ))
             );
 

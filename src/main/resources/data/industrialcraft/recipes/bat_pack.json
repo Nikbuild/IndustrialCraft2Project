@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BCB",
+    "BLB",
+    "BCB"
+  ],
+  "key": {
+    "B": {
+      "item": "industrialcraft:re_battery"
+    },
+    "C": {
+      "item": "industrialcraft:insulated_copper_cable"
+    },
+    "L": {
+      "item": "minecraft:leather"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:bat_pack",
+    "count": 1
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BB",
+    " S",
+    " S"
+  ],
+  "key": {
+    "B": {
+      "item": "industrialcraft:bronze_ingot"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:bronze_hoe",
+    "count": 1
+  }
+}

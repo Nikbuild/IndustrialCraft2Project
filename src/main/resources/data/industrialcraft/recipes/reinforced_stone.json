@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SAS",
+    "ASA",
+    "SAS"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:stone"
+    },
+    "A": {
+      "item": "industrialcraft:advanced_alloy"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:reinforced_stone",
+    "count": 4
+  }
+}

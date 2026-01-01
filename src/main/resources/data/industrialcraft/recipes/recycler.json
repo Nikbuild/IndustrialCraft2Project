@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "DIG",
+    "DCD",
+    "   "
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:dirt"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "G": {
+      "item": "minecraft:glowstone_dust"
+    },
+    "C": {
+      "item": "industrialcraft:compressor"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:recycler",
+    "count": 1
+  }
+}

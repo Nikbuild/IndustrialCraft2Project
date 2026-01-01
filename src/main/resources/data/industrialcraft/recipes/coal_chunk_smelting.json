@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": "industrialcraft:coal_chunk",
+  "result": {
+    "id": "industrialcraft:industrial_diamond"
+  },
+  "experience": 1.0,
+  "cookingtime": 200
+}

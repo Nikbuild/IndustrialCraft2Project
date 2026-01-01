@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "industrialcraft:scrap",
+    "minecraft:bone_meal"
+  ],
+  "result": {
+    "id": "industrialcraft:fertilizer",
+    "count": 2
+  }
+}

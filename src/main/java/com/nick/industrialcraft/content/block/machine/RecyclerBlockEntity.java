@@ -18,6 +18,8 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import com.nick.industrialcraft.registry.ModBlockEntity;
 import com.nick.industrialcraft.registry.ModItems;
+import com.nick.industrialcraft.api.energy.EnergyTier;
+import com.nick.industrialcraft.api.energy.IEnergyTier;
 
 /**
  * Recycler Block Entity
@@ -38,7 +40,7 @@ import com.nick.industrialcraft.registry.ModItems;
  * - Operation time: 45 ticks (2.25 seconds)
  * - Max input: 32 EU/t (LV tier)
  */
-public class RecyclerBlockEntity extends BlockEntity implements MenuProvider {
+public class RecyclerBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier {
 
     public static final int INPUT_SLOT = 0;
     public static final int BATTERY_SLOT = 1;
@@ -147,7 +149,7 @@ public class RecyclerBlockEntity extends BlockEntity implements MenuProvider {
 
     @Override
     public Component getDisplayName() {
-        return Component.literal("Recycler");
+        return Component.translatable("container.industrialcraft.recycler");
     }
 
     @Override
@@ -327,6 +329,13 @@ public class RecyclerBlockEntity extends BlockEntity implements MenuProvider {
 
         // Try to deposit any pending scrap
         tryDepositPendingScrap();
+    }
+
+    // ========== Energy Tier Implementation ==========
+
+    @Override
+    public EnergyTier getEnergyTier() {
+        return EnergyTier.LV;  // Recycler is LV tier (max 32 EU/t input)
     }
 
     // ========== Server Tick ==========

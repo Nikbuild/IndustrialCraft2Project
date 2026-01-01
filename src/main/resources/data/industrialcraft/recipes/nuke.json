@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "UCU",
+    "TAT",
+    "UCU"
+  ],
+  "key": {
+    "U": {
+      "item": "industrialcraft:uranium_ingot"
+    },
+    "C": {
+      "item": "industrialcraft:advanced_circuit"
+    },
+    "T": {
+      "item": "minecraft:tnt"
+    },
+    "A": {
+      "item": "industrialcraft:advanced_alloy"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:nuke",
+    "count": 1
+  }
+}

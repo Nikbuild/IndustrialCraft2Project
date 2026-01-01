@@ -1,6 +1,8 @@
 package com.nick.industrialcraft.registry;
 
 import com.nick.industrialcraft.IndustrialCraft;
+import com.nick.industrialcraft.content.item.FilledTinCanItem;
+import com.nick.industrialcraft.content.item.TreetapItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -271,7 +273,7 @@ public final class ModItems {
 
     public static final DeferredItem<Item> TREETAP =
             ITEMS.register("treetap",
-                    () -> new Item(new Item.Properties().setId(
+                    () -> new TreetapItem(new Item.Properties().setId(
                             ResourceKey.create(Registries.ITEM,
                                     ResourceLocation.fromNamespaceAndPath(
                                             IndustrialCraft.MODID, "treetap"))
@@ -815,7 +817,7 @@ public final class ModItems {
 
     public static final DeferredItem<Item> FILLED_TIN_CAN =
             ITEMS.register("filled_tin_can",
-                    () -> new Item(new Item.Properties().setId(
+                    () -> new FilledTinCanItem(new Item.Properties().setId(
                             ResourceKey.create(Registries.ITEM,
                                     ResourceLocation.fromNamespaceAndPath(
                                             IndustrialCraft.MODID, "filled_tin_can"))
@@ -1513,6 +1515,12 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> RUBBER_SAPLING_ITEM =
             ITEMS.registerSimpleBlockItem("rubber_sapling", ModBlocks.RUBBER_SAPLING);
 
+    public static final DeferredItem<BlockItem> RESIN_FILLED_RUBBER_WOOD_ITEM =
+            ITEMS.registerSimpleBlockItem("resin_filled_rubber_wood", ModBlocks.RESIN_FILLED_RUBBER_WOOD);
+
+    public static final DeferredItem<BlockItem> RUBBER_PLANKS_ITEM =
+            ITEMS.registerSimpleBlockItem("rubber_planks", ModBlocks.RUBBER_PLANKS);
+
     // Decoration / Materials
     public static final DeferredItem<BlockItem> RESIN_BLOCK_ITEM =
             ITEMS.registerSimpleBlockItem("resin_block", ModBlocks.RESIN_BLOCK);
@@ -1571,6 +1579,9 @@ public final class ModItems {
 
     public static final DeferredItem<BlockItem> BATBOX_ITEM =
             ITEMS.registerSimpleBlockItem("batbox", ModBlocks.BATBOX);
+
+    public static final DeferredItem<BlockItem> CANNING_MACHINE_ITEM =
+            ITEMS.registerSimpleBlockItem("canning_machine", ModBlocks.CANNING_MACHINE);
 
     public static final DeferredItem<BlockItem> REACTOR_CHAMBER_ITEM =
             ITEMS.registerSimpleBlockItem("reactor_chamber", ModBlocks.REACTOR_CHAMBER);

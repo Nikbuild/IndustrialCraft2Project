@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "B B",
+    "BBB",
+    "BBB"
+  ],
+  "key": {
+    "B": {
+      "item": "industrialcraft:bronze_ingot"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:bronze_chestplate",
+    "count": 1
+  }
+}

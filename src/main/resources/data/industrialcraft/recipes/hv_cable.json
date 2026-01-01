@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "III"
+  ],
+  "key": {
+    "I": {
+      "item": "industrialcraft:refined_iron_ingot"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:high_voltage_cable",
+    "count": 6
+  }
+}

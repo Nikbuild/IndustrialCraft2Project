@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -27,6 +28,8 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
 import com.nick.industrialcraft.registry.ModBlockEntity;
+import com.nick.industrialcraft.api.energy.OvervoltageHandler;
+import com.nick.industrialcraft.api.energy.EnergyNetworkManager;
 
 public class GeothermalGeneratorBlock extends Block implements EntityBlock {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
@@ -69,6 +72,9 @@ public class GeothermalGeneratorBlock extends Block implements EntityBlock {
     @Override
     public void destroy(LevelAccessor level, BlockPos pos, BlockState state) {
         if (level instanceof Level realLevel) {
+            if (!realLevel.isClientSide()) {
+                EnergyNetworkManager.invalidateAt(realLevel, pos);
+            }
             BlockEntity be = realLevel.getBlockEntity(pos);
             if (be instanceof GeothermalGeneratorBlockEntity generator) {
                 // Drop the fuel item if present
@@ -95,6 +101,22 @@ public class GeothermalGeneratorBlock extends Block implements EntityBlock {
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState()
             .setValue(FACING, context.getHorizontalDirection());
+    }
+
+    // ========== Overvoltage Check on Placement ==========
+
+    @Override
+    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
+        super.onPlace(state, level, pos, oldState, isMoving);
+        if (!level.isClientSide && !isMoving) {
+            EnergyNetworkManager.invalidateAt(level, pos);
+            level.scheduleTick(pos, this, 1);
+        }
+    }
+
+    @Override
+    protected void tick(BlockState state, net.minecraft.server.level.ServerLevel level, BlockPos pos, RandomSource random) {
+        OvervoltageHandler.checkOnPlacement(level, pos);
     }
 
     // ========== Capability Registration ==========

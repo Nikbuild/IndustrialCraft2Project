@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "S S",
+    "SMS",
+    "SCS"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:stone"
+    },
+    "M": {
+      "item": "industrialcraft:machine"
+    },
+    "C": {
+      "item": "industrialcraft:electronic_circuit"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:compressor",
+    "count": 1
+  }
+}

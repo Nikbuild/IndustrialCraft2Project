@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "industrialcraft:resin_filled_rubber_wood"
+  ],
+  "result": {
+    "id": "industrialcraft:rubber_planks",
+    "count": 4
+  }
+}

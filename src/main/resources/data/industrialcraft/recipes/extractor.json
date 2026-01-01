@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "TMT",
+    "TCT",
+    "   "
+  ],
+  "key": {
+    "T": {
+      "item": "industrialcraft:treetap"
+    },
+    "M": {
+      "item": "industrialcraft:machine"
+    },
+    "C": {
+      "item": "industrialcraft:electronic_circuit"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:extractor",
+    "count": 1
+  }
+}

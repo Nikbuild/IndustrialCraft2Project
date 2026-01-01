@@ -1,1 +1,48 @@
-{"variants": {"": { "model": "industrialcraft:block/tree/rubber_wood" }}}
+{
+  "multipart": [
+    {
+      "apply": { "model": "industrialcraft:block/tree/rubber_wood" },
+      "when": { "axis": "y" }
+    },
+    {
+      "apply": { "model": "industrialcraft:block/tree/rubber_wood", "x": 90 },
+      "when": { "axis": "z" }
+    },
+    {
+      "apply": { "model": "industrialcraft:block/tree/rubber_wood", "x": 90, "y": 90 },
+      "when": { "axis": "x" }
+    },
+    {
+      "apply": { "model": "industrialcraft:block/tree/rubber_wood_resin_wet" },
+      "when": { "has_resin": "true", "wet": "true", "resin_facing": "north" }
+    },
+    {
+      "apply": { "model": "industrialcraft:block/tree/rubber_wood_resin_wet", "y": 90 },
+      "when": { "has_resin": "true", "wet": "true", "resin_facing": "east" }
+    },
+    {
+      "apply": { "model": "industrialcraft:block/tree/rubber_wood_resin_wet", "y": 180 },
+      "when": { "has_resin": "true", "wet": "true", "resin_facing": "south" }
+    },
+    {
+      "apply": { "model": "industrialcraft:block/tree/rubber_wood_resin_wet", "y": 270 },
+      "when": { "has_resin": "true", "wet": "true", "resin_facing": "west" }
+    },
+    {
+      "apply": { "model": "industrialcraft:block/tree/rubber_wood_resin_dry" },
+      "when": { "has_resin": "true", "wet": "false", "resin_facing": "north" }
+    },
+    {
+      "apply": { "model": "industrialcraft:block/tree/rubber_wood_resin_dry", "y": 90 },
+      "when": { "has_resin": "true", "wet": "false", "resin_facing": "east" }
+    },
+    {
+      "apply": { "model": "industrialcraft:block/tree/rubber_wood_resin_dry", "y": 180 },
+      "when": { "has_resin": "true", "wet": "false", "resin_facing": "south" }
+    },
+    {
+      "apply": { "model": "industrialcraft:block/tree/rubber_wood_resin_dry", "y": 270 },
+      "when": { "has_resin": "true", "wet": "false", "resin_facing": "west" }
+    }
+  ]
+}

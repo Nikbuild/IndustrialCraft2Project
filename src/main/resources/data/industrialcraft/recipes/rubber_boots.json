@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "R R",
+    "R R"
+  ],
+  "key": {
+    "R": {
+      "item": "industrialcraft:rubber"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:rubber_boots",
+    "count": 1
+  }
+}

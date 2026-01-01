@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CCC",
+    "WEW"
+  ],
+  "key": {
+    "C": {
+      "item": "industrialcraft:cooling_cell"
+    },
+    "W": {
+      "item": "industrialcraft:insulated_copper_cable"
+    },
+    "E": {
+      "item": "industrialcraft:electronic_circuit"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:overclocker_upgrade",
+    "count": 1
+  }
+}

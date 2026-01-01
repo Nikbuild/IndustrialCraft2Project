@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PCP",
+    "BBB",
+    "PPP"
+  ],
+  "key": {
+    "P": {
+      "tag": "minecraft:planks"
+    },
+    "C": {
+      "item": "industrialcraft:insulated_copper_cable"
+    },
+    "B": {
+      "item": "industrialcraft:re_battery"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:batbox",
+    "count": 1
+  }
+}

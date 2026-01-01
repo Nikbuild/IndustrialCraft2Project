@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "industrialcraft:block/canning_machine_top",
+    "front": "industrialcraft:block/canning_machine_front_active",
+    "side": "industrialcraft:block/canning_machine_side",
+    "bottom": "industrialcraft:block/canning_machine_bottom"
+  }
+}

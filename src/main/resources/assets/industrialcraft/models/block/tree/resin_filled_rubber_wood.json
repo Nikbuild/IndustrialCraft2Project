@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "industrialcraft:block/tree/rubber_wood_wet_bottomtop",
+    "side": "industrialcraft:block/tree/rubber_wood_wet_front"
+  }
+}

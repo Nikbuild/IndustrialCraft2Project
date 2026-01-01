@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "industrialcraft:block/tree/rubber_wood_plank"
+  }
+}

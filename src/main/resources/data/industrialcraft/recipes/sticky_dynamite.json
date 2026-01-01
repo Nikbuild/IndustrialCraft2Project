@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "industrialcraft:dynamite",
+    "industrialcraft:sticky_resin"
+  ],
+  "result": {
+    "id": "industrialcraft:sticky_dynamite",
+    "count": 1
+  }
+}

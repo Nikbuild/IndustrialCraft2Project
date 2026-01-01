@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " W ",
+    "PBP",
+    " W "
+  ],
+  "key": {
+    "W": {
+      "item": "industrialcraft:insulated_copper_cable"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    },
+    "B": {
+      "item": "industrialcraft:re_battery"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:energy_storage_upgrade",
+    "count": 1
+  }
+}

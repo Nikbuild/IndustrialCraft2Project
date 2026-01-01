@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " II",
+    "ICI",
+    "BI "
+  ],
+  "key": {
+    "I": {
+      "item": "industrialcraft:refined_iron_ingot"
+    },
+    "C": {
+      "item": "industrialcraft:electronic_circuit"
+    },
+    "B": {
+      "item": "industrialcraft:re_battery"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:chainsaw",
+    "count": 1
+  }
+}

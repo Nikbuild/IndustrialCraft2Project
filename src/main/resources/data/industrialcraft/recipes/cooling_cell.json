@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " T ",
+    "TWW",
+    " T "
+  ],
+  "key": {
+    "T": {
+      "item": "industrialcraft:tin_ingot"
+    },
+    "W": {
+      "item": "industrialcraft:water_cell"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:cooling_cell",
+    "count": 1
+  }
+}

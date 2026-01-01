@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "T T",
+    " T "
+  ],
+  "key": {
+    "T": {
+      "item": "industrialcraft:tin_ingot"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:tin_can",
+    "count": 10
+  }
+}

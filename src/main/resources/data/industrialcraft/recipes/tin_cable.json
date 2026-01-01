@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "TTT"
+  ],
+  "key": {
+    "T": {
+      "item": "industrialcraft:tin_ingot"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:ultra_low_current_cable",
+    "count": 6
+  }
+}

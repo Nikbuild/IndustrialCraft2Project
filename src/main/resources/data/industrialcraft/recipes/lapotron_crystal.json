@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "LCL",
+    "LEL",
+    "LCL"
+  ],
+  "key": {
+    "L": {
+      "item": "minecraft:lapis_lazuli"
+    },
+    "C": {
+      "item": "industrialcraft:electronic_circuit"
+    },
+    "E": {
+      "item": "industrialcraft:energy_crystal"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:lapotron_crystal",
+    "count": 1
+  }
+}

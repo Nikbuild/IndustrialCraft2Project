@@ -3,7 +3,8 @@
   "ambientocclusion": false,
   "render_type": "minecraft:cutout_mipped",
   "textures": {
-    "all": "industrialcraft:block/cable/gold_cable_double_insulated"
+    "all": "industrialcraft:block/cable/gold_cable_double_insulated",
+    "particle": "industrialcraft:block/cable/gold_cable_double_insulated"
   },
   "elements": [
     {

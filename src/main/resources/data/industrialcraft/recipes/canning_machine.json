@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "TCT",
+    "TMT",
+    "TTT"
+  ],
+  "key": {
+    "T": {
+      "item": "industrialcraft:tin_ingot"
+    },
+    "C": {
+      "item": "industrialcraft:electronic_circuit"
+    },
+    "M": {
+      "item": "industrialcraft:machine"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:canning_machine",
+    "count": 1
+  }
+}

@@ -27,10 +27,10 @@ public class GeneratorScreen extends AbstractContainerScreen<GeneratorMenu> {
     private static final int ENERGY_BAR_X = 94;   // Adjust as needed
     private static final int ENERGY_BAR_Y = 39;    // Adjust as needed
 
-    // ---- Energy bar texture (red bar from test6.png) - no stretching ----
+    // ---- Energy bar texture (red bar) - no stretching ----
     private static final ResourceLocation TEX_ENERGY_BAR =
-        ResourceLocation.fromNamespaceAndPath(IndustrialCraft.MODID, "textures/block/technical/test6.png");
-    // test6.png is 24x9 pixels, render at native size
+        ResourceLocation.fromNamespaceAndPath(IndustrialCraft.MODID, "textures/block/technical/energy_bar.png");
+    // energy_bar.png is 24x9 pixels, render at native size
     private static final int ENERGY_BAR_TEX_W = 24;
     private static final int ENERGY_BAR_TEX_H = 9;
 
@@ -87,7 +87,7 @@ public class GeneratorScreen extends AbstractContainerScreen<GeneratorMenu> {
     }
 
     /**
-     * Render energy bar texture (test6.png) revealing from left to right based on stored energy.
+     * Render energy bar texture revealing from left to right based on stored energy.
      * Fills proportionally to current energy vs max energy capacity.
      */
     private void renderEnergyBar(GuiGraphics guiGraphics) {

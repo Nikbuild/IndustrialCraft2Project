@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "RRR",
+    "RRR",
+    "RRR"
+  ],
+  "key": {
+    "R": {
+      "item": "industrialcraft:rubber"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:rubber_sheet",
+    "count": 1
+  }
+}

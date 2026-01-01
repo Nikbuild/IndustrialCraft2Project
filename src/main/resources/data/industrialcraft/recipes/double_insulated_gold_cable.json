@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "industrialcraft:rubber",
+    "industrialcraft:rubber",
+    "industrialcraft:gold_cable"
+  ],
+  "result": {
+    "id": "industrialcraft:gold_cable_double_insulated",
+    "count": 1
+  }
+}

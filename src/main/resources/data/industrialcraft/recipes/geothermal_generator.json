@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GCG",
+    "CGC",
+    "GGG"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "C": {
+      "item": "industrialcraft:generator"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:geothermal_generator",
+    "count": 1
+  }
+}

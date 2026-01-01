@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " C ",
+    "GRG",
+    " C "
+  ],
+  "key": {
+    "C": {
+      "item": "industrialcraft:insulated_copper_cable"
+    },
+    "G": {
+      "item": "minecraft:glass_pane"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:ec_meter",
+    "count": 1
+  }
+}

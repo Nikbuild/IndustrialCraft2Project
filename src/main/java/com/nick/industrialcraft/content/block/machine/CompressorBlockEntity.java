@@ -20,11 +20,13 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import com.nick.industrialcraft.registry.ModBlockEntity;
 import com.nick.industrialcraft.registry.ModItems;
+import com.nick.industrialcraft.api.energy.EnergyTier;
+import com.nick.industrialcraft.api.energy.IEnergyTier;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class CompressorBlockEntity extends BlockEntity implements MenuProvider {
+public class CompressorBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier {
 
     public static final int INPUT_SLOT = 0;
     public static final int BATTERY_SLOT = 1;
@@ -197,7 +199,7 @@ public class CompressorBlockEntity extends BlockEntity implements MenuProvider {
 
     @Override
     public Component getDisplayName() {
-        return Component.literal("Compressor");
+        return Component.translatable("container.industrialcraft.compressor");
     }
 
     @Override
@@ -290,6 +292,13 @@ public class CompressorBlockEntity extends BlockEntity implements MenuProvider {
         } else {
             output.grow(result.getCount());
         }
+    }
+
+    // ========== Energy Tier Implementation ==========
+
+    @Override
+    public EnergyTier getEnergyTier() {
+        return EnergyTier.LV;  // Compressor is LV tier (max 32 EU/t input)
     }
 
     // ========== Server Tick ==========

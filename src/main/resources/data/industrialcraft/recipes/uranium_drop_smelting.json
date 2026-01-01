@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": "industrialcraft:uranium_drop",
+  "result": {
+    "id": "industrialcraft:uranium_ingot"
+  },
+  "experience": 1.0,
+  "cookingtime": 200
+}

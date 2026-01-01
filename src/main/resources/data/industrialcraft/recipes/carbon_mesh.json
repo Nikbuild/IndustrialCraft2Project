@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "C",
+    "C"
+  ],
+  "key": {
+    "C": {
+      "item": "industrialcraft:carbon_fiber"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:carbon_mesh",
+    "count": 1
+  }
+}

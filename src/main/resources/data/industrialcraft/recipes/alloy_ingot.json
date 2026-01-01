@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "III",
+    "BBB",
+    "TTT"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "B": {
+      "item": "industrialcraft:bronze_ingot"
+    },
+    "T": {
+      "item": "industrialcraft:tin_ingot"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:alloy_ingot",
+    "count": 2
+  }
+}

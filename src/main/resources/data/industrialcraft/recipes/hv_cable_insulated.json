@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "industrialcraft:high_voltage_cable",
+    "industrialcraft:rubber"
+  ],
+  "result": {
+    "id": "industrialcraft:high_voltage_cable_insulated",
+    "count": 1
+  }
+}

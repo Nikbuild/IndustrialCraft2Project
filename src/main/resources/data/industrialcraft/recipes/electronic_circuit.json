@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CCC",
+    "RIR",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "item": "industrialcraft:insulated_copper_cable"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "I": {
+      "item": "industrialcraft:refined_iron_ingot"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:electronic_circuit",
+    "count": 1
+  }
+}

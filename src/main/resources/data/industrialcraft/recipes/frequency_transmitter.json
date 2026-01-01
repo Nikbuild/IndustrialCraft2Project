@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " R ",
+    "ICI",
+    "IEI"
+  ],
+  "key": {
+    "R": {
+      "item": "minecraft:redstone_torch"
+    },
+    "I": {
+      "item": "industrialcraft:refined_iron_ingot"
+    },
+    "C": {
+      "item": "industrialcraft:electronic_circuit"
+    },
+    "E": {
+      "item": "minecraft:ender_pearl"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:frequency_transmitter",
+    "count": 1
+  }
+}

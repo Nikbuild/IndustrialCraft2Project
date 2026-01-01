@@ -19,7 +19,12 @@ import com.nick.industrialcraft.content.block.machine.CompressorBlock;
 import com.nick.industrialcraft.content.block.machine.ExtractorBlock;
 import com.nick.industrialcraft.content.block.machine.RecyclerBlock;
 import com.nick.industrialcraft.content.block.machine.InductionFurnaceBlock;
+import com.nick.industrialcraft.content.block.machine.CanningMachineBlock;
 import com.nick.industrialcraft.content.block.storage.BatBoxBlock;
+import com.nick.industrialcraft.content.block.tree.ResinFilledRubberWoodBlock;
+import com.nick.industrialcraft.content.block.tree.RubberLeavesBlock;
+import com.nick.industrialcraft.content.block.tree.RubberSaplingBlock;
+import com.nick.industrialcraft.content.block.tree.RubberWoodBlock;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -105,12 +110,14 @@ public final class ModBlocks {
     /* Rubber Tree                                                            */
     /* --------------------------------------------------------------------- */
 
-    public static final DeferredBlock<Block> RUBBER_WOOD = BLOCKS.register(
+    public static final DeferredBlock<RubberWoodBlock> RUBBER_WOOD = BLOCKS.register(
             "rubber_wood",
-            () -> new Block(
+            () -> new RubberWoodBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.WOOD)
                             .strength(2.0f)
+                            .sound(net.minecraft.world.level.block.SoundType.WOOD)
+                            .ignitedByLava()
                             .setId(ResourceKey.create(
                                     Registries.BLOCK,
                                     ResourceLocation.fromNamespaceAndPath(
@@ -121,13 +128,18 @@ public final class ModBlocks {
             )
     );
 
-    public static final DeferredBlock<Block> RUBBER_LEAVES = BLOCKS.register(
+    public static final DeferredBlock<RubberLeavesBlock> RUBBER_LEAVES = BLOCKS.register(
             "rubber_leaves",
-            () -> new Block(
+            () -> new RubberLeavesBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.PLANT)
                             .strength(0.2f)
+                            .randomTicks()
                             .noOcclusion()
+                            .isSuffocating((state, level, pos) -> false)
+                            .isViewBlocking((state, level, pos) -> false)
+                            .sound(net.minecraft.world.level.block.SoundType.GRASS)
+                            .ignitedByLava()
                             .setId(ResourceKey.create(
                                     Registries.BLOCK,
                                     ResourceLocation.fromNamespaceAndPath(
@@ -138,19 +150,57 @@ public final class ModBlocks {
             )
     );
 
-    public static final DeferredBlock<Block> RUBBER_SAPLING = BLOCKS.register(
+    public static final DeferredBlock<RubberSaplingBlock> RUBBER_SAPLING = BLOCKS.register(
             "rubber_sapling",
-            () -> new Block(
+            () -> new RubberSaplingBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.PLANT)
                             .noCollission()
+                            .randomTicks()
                             .strength(0.0f)
                             .noOcclusion()
+                            .sound(net.minecraft.world.level.block.SoundType.GRASS)
                             .setId(ResourceKey.create(
                                     Registries.BLOCK,
                                     ResourceLocation.fromNamespaceAndPath(
                                             IndustrialCraft.MODID,
                                             "rubber_sapling"
+                                    )
+                            ))
+            )
+    );
+
+    public static final DeferredBlock<ResinFilledRubberWoodBlock> RESIN_FILLED_RUBBER_WOOD = BLOCKS.register(
+            "resin_filled_rubber_wood",
+            () -> new ResinFilledRubberWoodBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.WOOD)
+                            .strength(2.0f)
+                            .sound(net.minecraft.world.level.block.SoundType.WOOD)
+                            .ignitedByLava()
+                            .setId(ResourceKey.create(
+                                    Registries.BLOCK,
+                                    ResourceLocation.fromNamespaceAndPath(
+                                            IndustrialCraft.MODID,
+                                            "resin_filled_rubber_wood"
+                                    )
+                            ))
+            )
+    );
+
+    public static final DeferredBlock<Block> RUBBER_PLANKS = BLOCKS.register(
+            "rubber_planks",
+            () -> new Block(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.WOOD)
+                            .strength(2.0f, 3.0f)
+                            .sound(net.minecraft.world.level.block.SoundType.WOOD)
+                            .ignitedByLava()
+                            .setId(ResourceKey.create(
+                                    Registries.BLOCK,
+                                    ResourceLocation.fromNamespaceAndPath(
+                                            IndustrialCraft.MODID,
+                                            "rubber_planks"
                                     )
                             ))
             )
@@ -683,6 +733,23 @@ public final class ModBlocks {
                                     ResourceLocation.fromNamespaceAndPath(
                                             IndustrialCraft.MODID,
                                             "batbox"
+                                    )
+                            ))
+            )
+    );
+
+    public static final DeferredBlock<Block> CANNING_MACHINE = BLOCKS.register(
+            "canning_machine",
+            () -> new CanningMachineBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.METAL)
+                            .strength(3.0f)
+                            .requiresCorrectToolForDrops()
+                            .setId(ResourceKey.create(
+                                    Registries.BLOCK,
+                                    ResourceLocation.fromNamespaceAndPath(
+                                            IndustrialCraft.MODID,
+                                            "canning_machine"
                                     )
                             ))
             )

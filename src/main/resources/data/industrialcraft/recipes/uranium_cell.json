@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "industrialcraft:uranium_ingot",
+    "industrialcraft:cell"
+  ],
+  "result": {
+    "id": "industrialcraft:uranium_cell",
+    "count": 1
+  }
+}

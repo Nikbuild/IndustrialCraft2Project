@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " W ",
+    " C ",
+    " B "
+  ],
+  "key": {
+    "W": {
+      "item": "industrialcraft:wrench"
+    },
+    "C": {
+      "item": "industrialcraft:electronic_circuit"
+    },
+    "B": {
+      "item": "industrialcraft:re_battery"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:electric_wrench",
+    "count": 1
+  }
+}

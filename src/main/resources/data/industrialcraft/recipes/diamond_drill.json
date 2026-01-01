@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " D ",
+    "DdD",
+    " E "
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "d": {
+      "item": "industrialcraft:mining_drill"
+    },
+    "E": {
+      "item": "industrialcraft:energy_crystal"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:diamond_drill",
+    "count": 1
+  }
+}

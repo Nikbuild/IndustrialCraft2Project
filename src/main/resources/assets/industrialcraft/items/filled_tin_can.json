@@ -1,6 +1,52 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "industrialcraft:item/filled_tin_can"
+    "type": "minecraft:select",
+    "property": "industrialcraft:canned_food_type",
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "industrialcraft:item/filled_tin_can"
+    },
+    "cases": [
+      { "when": "cooked_beef", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_cooked_beef" } },
+      { "when": "cooked_porkchop", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_cooked_porkchop" } },
+      { "when": "cooked_chicken", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_cooked_chicken" } },
+      { "when": "cooked_mutton", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_cooked_mutton" } },
+      { "when": "cooked_rabbit", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_cooked_rabbit" } },
+      { "when": "beef", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_beef" } },
+      { "when": "porkchop", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_porkchop" } },
+      { "when": "chicken", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_chicken" } },
+      { "when": "mutton", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_mutton" } },
+      { "when": "rabbit", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_rabbit" } },
+      { "when": "cooked_cod", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_cooked_cod" } },
+      { "when": "cooked_salmon", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_cooked_salmon" } },
+      { "when": "cod", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_cod" } },
+      { "when": "salmon", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_salmon" } },
+      { "when": "tropical_fish", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_tropical_fish" } },
+      { "when": "pufferfish", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_pufferfish" } },
+      { "when": "carrot", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_carrot" } },
+      { "when": "potato", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_potato" } },
+      { "when": "baked_potato", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_baked_potato" } },
+      { "when": "beetroot", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_beetroot" } },
+      { "when": "dried_kelp", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_dried_kelp" } },
+      { "when": "apple", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_apple" } },
+      { "when": "golden_apple", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_golden_apple" } },
+      { "when": "enchanted_golden_apple", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_enchanted_golden_apple" } },
+      { "when": "melon_slice", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_melon_slice" } },
+      { "when": "sweet_berries", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_sweet_berries" } },
+      { "when": "glow_berries", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_glow_berries" } },
+      { "when": "chorus_fruit", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_chorus_fruit" } },
+      { "when": "bread", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_bread" } },
+      { "when": "cookie", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_cookie" } },
+      { "when": "pumpkin_pie", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_pumpkin_pie" } },
+      { "when": "mushroom_stew", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_mushroom_stew" } },
+      { "when": "beetroot_soup", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_beetroot_soup" } },
+      { "when": "rabbit_stew", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_rabbit_stew" } },
+      { "when": "suspicious_stew", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_suspicious_stew" } },
+      { "when": "golden_carrot", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_golden_carrot" } },
+      { "when": "honey_bottle", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_honey_bottle" } },
+      { "when": "rotten_flesh", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_rotten_flesh" } },
+      { "when": "spider_eye", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_spider_eye" } },
+      { "when": "poisonous_potato", "model": { "type": "minecraft:model", "model": "industrialcraft:item/canned/canned_poisonous_potato" } }
+    ]
   }
 }

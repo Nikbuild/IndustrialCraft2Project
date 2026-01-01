@@ -22,6 +22,8 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import com.nick.industrialcraft.IndustrialCraft;
 import com.nick.industrialcraft.registry.ModBlockEntity;
+import com.nick.industrialcraft.api.energy.EnergyTier;
+import com.nick.industrialcraft.api.energy.IEnergyTier;
 
 /**
  * Reimagined Induction Furnace
@@ -41,7 +43,7 @@ import com.nick.industrialcraft.registry.ModBlockEntity;
  * - Induction Furnace (1 item): 3 EU/t base, 100 ticks, 300 EU per item
  * - Induction Furnace (2 items): 6 EU/t base, 100 ticks, 300 EU per item each
  */
-public class InductionFurnaceBlockEntity extends BlockEntity implements MenuProvider {
+public class InductionFurnaceBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier {
 
     // Tag for items that can be induction smelted (ferrous/conductive materials)
     public static final TagKey<Item> INDUCTION_SMELTABLE = TagKey.create(
@@ -215,6 +217,13 @@ public class InductionFurnaceBlockEntity extends BlockEntity implements MenuProv
      */
     public int getBaseEnergyRequirement() {
         return BASE_EU_PER_ITEM * Math.max(1, getActiveItemCount());
+    }
+
+    // ========== Energy Tier Implementation ==========
+
+    @Override
+    public EnergyTier getEnergyTier() {
+        return EnergyTier.MV;  // Induction Furnace is MV tier (max 128 EU/t input)
     }
 
     // ========== Server Tick ==========

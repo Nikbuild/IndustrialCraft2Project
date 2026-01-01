@@ -3,6 +3,8 @@ package com.nick.industrialcraft;
 import com.mojang.logging.LogUtils;
 import com.nick.industrialcraft.registry.ModBlocks;
 import com.nick.industrialcraft.registry.ModBlockEntity;
+import com.nick.industrialcraft.registry.ModDataComponents;
+import com.nick.industrialcraft.registry.ModFeatures;
 import com.nick.industrialcraft.registry.ModItems;
 import com.nick.industrialcraft.registry.ModMenus;
 import net.minecraft.core.registries.Registries;
@@ -12,6 +14,7 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -167,6 +170,8 @@ public class IndustrialCraft {
                                 out.accept(ModItems.ENERGY_STORAGE_UPGRADE.get());
 
                                 /* === Crafting Components === */
+                                out.accept(ModItems.TIN_CAN.get());
+                                out.accept(ModItems.FILLED_TIN_CAN.get());
                                 out.accept(ModItems.COAL_BALL.get());
                                 out.accept(ModItems.COMPRESSED_COAL_BALL.get());
                                 out.accept(ModItems.COAL_CHUNK.get());
@@ -252,6 +257,8 @@ public class IndustrialCraft {
 
                                 // Rubber Tree
                                 out.accept(ModItems.RUBBER_WOOD_ITEM.get());
+                                out.accept(ModItems.RESIN_FILLED_RUBBER_WOOD_ITEM.get());
+                                out.accept(ModItems.RUBBER_PLANKS_ITEM.get());
                                 out.accept(ModItems.RUBBER_LEAVES_ITEM.get());
                                 out.accept(ModItems.RUBBER_SAPLING_ITEM.get());
 
@@ -276,6 +283,7 @@ public class IndustrialCraft {
                                 out.accept(ModItems.COMPRESSOR_ITEM.get());
                                 out.accept(ModItems.RECYCLER_ITEM.get());
                                 out.accept(ModItems.INDUCTION_FURNACE_ITEM.get());
+                                out.accept(ModItems.CANNING_MACHINE_ITEM.get());
                                 out.accept(ModItems.BATBOX_ITEM.get());
                                 out.accept(ModItems.REACTOR_CHAMBER_ITEM.get());
                                 out.accept(ModItems.ELECTRIC_BLOCK_ITEM.get());
@@ -308,10 +316,15 @@ public class IndustrialCraft {
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::registerCapabilities);
 
+        // Register the config file
+        modContainer.registerConfig(ModConfig.Type.SERVER, Config.SPEC);
+
         ModBlocks.BLOCKS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModBlockEntity.BLOCK_ENTITY_TYPES.register(modEventBus);
         ModMenus.MENUS.register(modEventBus);
+        ModDataComponents.DATA_COMPONENTS.register(modEventBus);
+        ModFeatures.FEATURES.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
 
         NeoForge.EVENT_BUS.addListener(this::onServerStarting);
@@ -331,6 +344,7 @@ public class IndustrialCraft {
         com.nick.industrialcraft.content.block.machine.CompressorBlock.registerCapabilities(event);
         com.nick.industrialcraft.content.block.machine.RecyclerBlock.registerCapabilities(event);
         com.nick.industrialcraft.content.block.machine.InductionFurnaceBlock.registerCapabilities(event);
+        com.nick.industrialcraft.content.block.machine.CanningMachineBlock.registerCapabilities(event);
         com.nick.industrialcraft.content.block.storage.BatBoxBlock.registerCapabilities(event);
         com.nick.industrialcraft.content.block.cable.BaseCableBlock.registerCapabilities(event);
     }

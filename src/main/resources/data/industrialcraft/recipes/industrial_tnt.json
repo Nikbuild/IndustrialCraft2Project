@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "FTF",
+    "TFT",
+    "FTF"
+  ],
+  "key": {
+    "F": {
+      "item": "minecraft:flint"
+    },
+    "T": {
+      "item": "minecraft:tnt"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:industrial_tnt",
+    "count": 5
+  }
+}

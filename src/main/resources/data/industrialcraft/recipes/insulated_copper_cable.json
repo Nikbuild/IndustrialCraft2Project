@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "industrialcraft:rubber",
+    "industrialcraft:copper_cable"
+  ],
+  "result": {
+    "id": "industrialcraft:insulated_copper_cable",
+    "count": 1
+  }
+}

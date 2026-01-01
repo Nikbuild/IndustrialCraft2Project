@@ -1,0 +1,38 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "name": "industrialcraft:resin_filled_rubber_wood",
+              "conditions": [
+                {
+                  "condition": "minecraft:block_state_property",
+                  "block": "industrialcraft:rubber_wood",
+                  "properties": {
+                    "has_resin": "true",
+                    "wet": "true"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "industrialcraft:rubber_wood"
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ]
+    }
+  ]
+}

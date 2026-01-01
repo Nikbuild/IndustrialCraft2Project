@@ -2,6 +2,8 @@ package com.nick.industrialcraft.content.block.cable;
 
 import com.nick.industrialcraft.registry.ModBlocks;
 import com.nick.industrialcraft.registry.ModTags;
+import com.nick.industrialcraft.api.energy.OvervoltageHandler;
+import com.nick.industrialcraft.api.energy.EnergyNetworkManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -184,6 +186,40 @@ public abstract class BaseCableBlock extends Block implements EntityBlock {
         }
 
         return false;
+    }
+
+    /* ---------------- Overvoltage Check on Placement ---------------- */
+
+    /**
+     * When a cable is placed, check if it creates an overvoltage situation.
+     * This happens INSTANTLY - if an MV generator is connected to an LV machine
+     * through this cable, the machine will catch fire/explode immediately.
+     */
+    @Override
+    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
+        super.onPlace(state, level, pos, oldState, isMoving);
+
+        if (!level.isClientSide && !isMoving) {
+            // Invalidate network cache when cable is placed
+            EnergyNetworkManager.invalidateAt(level, pos);
+            // Schedule the overvoltage check for next tick to ensure block entity exists
+            level.scheduleTick(pos, this, 1);
+        }
+    }
+
+    @Override
+    public void destroy(net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockState state) {
+        if (level instanceof Level realLevel && !realLevel.isClientSide()) {
+            // Invalidate network cache when cable is removed
+            EnergyNetworkManager.invalidateAt(realLevel, pos);
+        }
+        super.destroy(level, pos, state);
+    }
+
+    @Override
+    protected void tick(BlockState state, net.minecraft.server.level.ServerLevel level, BlockPos pos, RandomSource random) {
+        // Check for overvoltage when the cable connects the network
+        OvervoltageHandler.checkOnPlacement(level, pos);
     }
 
     /* ---------------- EntityBlock implementation ---------------- */

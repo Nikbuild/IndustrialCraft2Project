@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "RRR",
+    "RRR",
+    "RRR"
+  ],
+  "key": {
+    "R": {
+      "item": "industrialcraft:sticky_resin"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:resin_block",
+    "count": 1
+  }
+}

@@ -19,8 +19,10 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.capabilities.Capabilities;
 
 import com.nick.industrialcraft.registry.ModBlockEntity;
-import com.nick.industrialcraft.content.block.cable.BaseCableBlock;
-import com.nick.industrialcraft.content.block.cable.CableBlockEntity;
+import com.nick.industrialcraft.api.energy.EnergyTier;
+import com.nick.industrialcraft.api.energy.IEnergyTier;
+import com.nick.industrialcraft.api.energy.EnergyNetworkManager;
+import com.nick.industrialcraft.api.energy.EnergyNetworkManager.MachineConnection;
 
 import java.util.*;
 
@@ -38,7 +40,7 @@ import java.util.*;
  * - Slot 0 (top): Charge items FROM BatBox storage
  * - Slot 1 (bottom): Discharge items INTO BatBox storage
  */
-public class BatBoxBlockEntity extends BlockEntity implements MenuProvider {
+public class BatBoxBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier {
 
     // Slot indices
     public static final int CHARGE_SLOT = 0;     // Items charged FROM BatBox
@@ -160,6 +162,19 @@ public class BatBoxBlockEntity extends BlockEntity implements MenuProvider {
         }
     }
 
+    // ========== Energy Tier Implementation ==========
+
+    @Override
+    public EnergyTier getEnergyTier() {
+        return EnergyTier.LV;  // BatBox is LV tier (32 EU/t max I/O)
+    }
+
+    @Override
+    public int getOutputPacketSize() {
+        // BatBox outputs up to 32 EU/t (full LV tier)
+        return MAX_TRANSFER;
+    }
+
     public static void serverTick(Level level, BlockPos pos, BlockState state, BatBoxBlockEntity be) {
         if (level.isClientSide()) return;
 
@@ -208,24 +223,24 @@ public class BatBoxBlockEntity extends BlockEntity implements MenuProvider {
 
     /**
      * Output energy to machines on the output face, scanning through cable networks.
+     * Uses cached network scanning for optimal performance.
      * Similar to Generator's outputEnergy but only from the output face direction.
      */
     private boolean outputEnergy(Level level, BlockPos pos, BlockState state) {
         Direction outputFace = state.getValue(BatBoxBlock.FACING);
-        BlockPos startPos = pos.relative(outputFace);
 
-        // Scan the cable network starting from the output face
-        Set<BlockPos> visitedCables = new HashSet<>();
-        List<MachineConnection> machines = new ArrayList<>();
-
-        scanNetwork(level, startPos, visitedCables, machines, pos);
+        // Use cached network manager for O(1) amortized performance
+        // Only scan from output face direction
+        List<MachineConnection> machines = EnergyNetworkManager.getConnectedMachines(
+            level, pos, outputFace
+        );
 
         if (machines.isEmpty() || energyStored <= 0) return false;
 
         // Filter to only machines that actually want energy
         List<MachineConnection> needyMachines = new ArrayList<>();
         for (MachineConnection machine : machines) {
-            int wants = machine.storage.receiveEnergy(Integer.MAX_VALUE, true);
+            int wants = machine.storage().receiveEnergy(Integer.MAX_VALUE, true);
             if (wants > 0) {
                 needyMachines.add(machine);
             }
@@ -240,9 +255,21 @@ public class BatBoxBlockEntity extends BlockEntity implements MenuProvider {
 
         int totalTransferred = 0;
 
+        // Get our output packet size (for tier checking)
+        int packetSize = getOutputPacketSize();
+
         for (MachineConnection machine : needyMachines) {
+            // Check tier compatibility before transferring
+            if (machine.blockEntity() instanceof IEnergyTier tieredMachine) {
+                if (!tieredMachine.canSafelyReceive(packetSize)) {
+                    // Machine can't handle this voltage - EXPLODE!
+                    explodeMachine(level, machine.pos());
+                    continue;  // Don't transfer to exploded machine
+                }
+            }
+
             int toTransfer = Math.min(energyPerMachine, energyStored);
-            int transferred = machine.storage.receiveEnergy(toTransfer, false);
+            int transferred = machine.storage().receiveEnergy(toTransfer, false);
             if (transferred > 0) {
                 energyStored -= transferred;
                 totalTransferred += transferred;
@@ -253,60 +280,18 @@ public class BatBoxBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     /**
-     * Recursively scan the cable network to find all connected machines.
+     * Cause an explosion at the given position (machine received packet too large for its tier).
      */
-    private void scanNetwork(Level level, BlockPos pos, Set<BlockPos> visitedCables, List<MachineConnection> machines, BlockPos sourcePos) {
-        // Don't scan back to the BatBox itself
-        if (pos.equals(sourcePos)) return;
-
-        BlockState state = level.getBlockState(pos);
-
-        // If this is a cable, explore its connections
-        if (state.getBlock() instanceof BaseCableBlock) {
-            if (visitedCables.contains(pos)) return;
-            visitedCables.add(pos);
-
-            BlockEntity be = level.getBlockEntity(pos);
-            if (!(be instanceof CableBlockEntity cable)) return;
-
-            // Check all 6 directions from this cable
-            for (Direction dir : Direction.values()) {
-                if (!cable.isConnectedInDirection(state, dir)) continue;
-                BlockPos neighborPos = pos.relative(dir);
-                scanNetwork(level, neighborPos, visitedCables, machines, sourcePos);
-            }
-        }
-        // If this is a machine (not a cable), check if it can receive energy
-        else {
-            // Check for duplicates
-            for (MachineConnection existing : machines) {
-                if (existing.pos.equals(pos)) return;
-            }
-
-            // Try to get energy capability
-            IEnergyStorage neighborEnergy = level.getCapability(
-                Capabilities.EnergyStorage.BLOCK,
-                pos,
-                null
-            );
-
-            if (neighborEnergy != null && neighborEnergy.canReceive()) {
-                machines.add(new MachineConnection(pos, neighborEnergy));
-            }
-        }
-    }
-
-    /**
-     * Helper class to store information about connected machines.
-     */
-    private static class MachineConnection {
-        final BlockPos pos;
-        final IEnergyStorage storage;
-
-        MachineConnection(BlockPos pos, IEnergyStorage storage) {
-            this.pos = pos;
-            this.storage = storage;
-        }
+    private void explodeMachine(Level level, BlockPos machinePos) {
+        // Small explosion like IC2 (size 0.5-1.5)
+        level.explode(
+            null,  // No entity caused the explosion
+            machinePos.getX() + 0.5,
+            machinePos.getY() + 0.5,
+            machinePos.getZ() + 0.5,
+            1.0f,  // Explosion radius (small, just destroys the machine)
+            Level.ExplosionInteraction.BLOCK  // Destroys blocks
+        );
     }
 
     @Override

@@ -1,1 +1,7 @@
-{"parent": "minecraft:block/cross","textures": { "cross": "industrialcraft:block/tree/rubber_sapling" }}
+{
+  "parent": "minecraft:block/cross",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "cross": "industrialcraft:block/tree/rubber_sapling"
+  }
+}

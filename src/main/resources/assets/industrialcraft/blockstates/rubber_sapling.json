@@ -1,1 +1,6 @@
-{"variants": {"": { "model": "industrialcraft:block/tree/rubber_sapling" }}}
+{
+  "variants": {
+    "stage=0": { "model": "industrialcraft:block/tree/rubber_sapling" },
+    "stage=1": { "model": "industrialcraft:block/tree/rubber_sapling" }
+  }
+}

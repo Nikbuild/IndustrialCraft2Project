@@ -20,8 +20,10 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.capabilities.Capabilities;
 
 import com.nick.industrialcraft.registry.ModBlockEntity;
+import com.nick.industrialcraft.api.energy.EnergyTier;
+import com.nick.industrialcraft.api.energy.IEnergyTier;
 
-public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvider {
+public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier {
 
     public static final int INPUT_SLOT = 0;
     public static final int BATTERY_SLOT = 1;
@@ -135,7 +137,7 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
 
     @Override
     public Component getDisplayName() {
-        return Component.literal("Electric Furnace");
+        return Component.translatable("container.industrialcraft.electric_furnace");
     }
 
     @Override
@@ -185,6 +187,13 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
 
     public void setPoweredClient(boolean powered) {
         this.powered = powered;
+    }
+
+    // ========== Energy Tier Implementation ==========
+
+    @Override
+    public EnergyTier getEnergyTier() {
+        return EnergyTier.LV;  // Electric Furnace is LV tier (max 32 EU/t input)
     }
 
     // ========== Server Tick ==========

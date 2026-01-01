@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CC",
+    "CC"
+  ],
+  "key": {
+    "C": {
+      "item": "industrialcraft:coal_dust"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:carbon_fiber",
+    "count": 1
+  }
+}

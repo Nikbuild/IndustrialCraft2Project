@@ -1,1 +1,7 @@
-{"parent": "minecraft:block/cube_all","textures": { "all": "industrialcraft:block/tree/rubber_wood" }}
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "industrialcraft:block/tree/rubber_wood_bottomtop",
+    "side": "industrialcraft:block/tree/rubber_wood_sides"
+  }
+}

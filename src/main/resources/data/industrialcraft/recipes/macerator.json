@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "FCF",
+    "SMS",
+    "FCF"
+  ],
+  "key": {
+    "F": {
+      "item": "minecraft:flint"
+    },
+    "C": {
+      "item": "minecraft:cobblestone"
+    },
+    "S": {
+      "item": "industrialcraft:electronic_circuit"
+    },
+    "M": {
+      "item": "industrialcraft:machine"
+    }
+  },
+  "result": {
+    "id": "industrialcraft:macerator",
+    "count": 1
+  }
+}
