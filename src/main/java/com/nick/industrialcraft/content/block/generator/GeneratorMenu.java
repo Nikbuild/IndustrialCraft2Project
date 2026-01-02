@@ -28,8 +28,11 @@ public class GeneratorMenu extends AbstractContainerMenu {
         this.blockEntity = blockEntity;
         this.itemHandler = blockEntity.getInventory();
 
-        // Add fuel slot
+        // Add fuel slot (bottom)
         this.addSlot(new SlotItemHandler(itemHandler, GeneratorBlockEntity.FUEL_SLOT, 65, 53));
+
+        // Add charge slot (top) - for charging electric items
+        this.addSlot(new SlotItemHandler(itemHandler, GeneratorBlockEntity.CHARGE_SLOT, 65, 17));
 
         // Add player inventory (27 slots)
         final int xStart = 8, yStart = 84;

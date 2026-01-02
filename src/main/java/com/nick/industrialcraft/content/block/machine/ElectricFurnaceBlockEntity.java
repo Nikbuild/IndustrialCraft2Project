@@ -20,10 +20,14 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.capabilities.Capabilities;
 
 import com.nick.industrialcraft.registry.ModBlockEntity;
+import com.nick.industrialcraft.registry.ModDataComponents;
+import com.nick.industrialcraft.registry.ModItems;
 import com.nick.industrialcraft.api.energy.EnergyTier;
 import com.nick.industrialcraft.api.energy.IEnergyTier;
+import com.nick.industrialcraft.api.wrench.IWrenchable;
+import com.nick.industrialcraft.content.item.StoredEnergyData;
 
-public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier {
+public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier, IWrenchable {
 
     public static final int INPUT_SLOT = 0;
     public static final int BATTERY_SLOT = 1;
@@ -336,5 +340,54 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
         // This ensures lastInputWasValid gets set correctly even after mod updates
         lastInputItem = ItemStack.EMPTY;
         lastInputWasValid = false;
+    }
+
+    // ========== IWrenchable Implementation ==========
+
+    @Override
+    public boolean canWrenchRotate(net.minecraft.world.entity.player.Player player, Direction newFacing) {
+        return newFacing.getAxis().isHorizontal();
+    }
+
+    @Override
+    public Direction getFacing() {
+        return getBlockState().getValue(ElectricFurnaceBlock.FACING);
+    }
+
+    @Override
+    public void setFacing(Direction facing) {
+        if (level != null && !level.isClientSide) {
+            level.setBlock(worldPosition, getBlockState().setValue(ElectricFurnaceBlock.FACING, facing), 3);
+        }
+    }
+
+    @Override
+    public boolean canWrenchRemove(net.minecraft.world.entity.player.Player player) {
+        return true;
+    }
+
+    @Override
+    public int getStoredEnergy() {
+        return energy;
+    }
+
+    @Override
+    public void setStoredEnergy(int energy) {
+        this.energy = Math.min(energy, MAX_ENERGY);
+    }
+
+    @Override
+    public int getMaxStoredEnergy() {
+        return MAX_ENERGY;
+    }
+
+    @Override
+    public ItemStack createWrenchDrop() {
+        ItemStack drop = new ItemStack(ModItems.ELECTRIC_FURNACE_ITEM.get());
+        // Store energy in the item using DataComponent
+        if (energy > 0) {
+            drop.set(ModDataComponents.STORED_ENERGY.get(), StoredEnergyData.of(energy));
+        }
+        return drop;
     }
 }

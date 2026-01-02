@@ -1,6 +1,7 @@
 package com.nick.industrialcraft.content.block.machine;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -22,8 +23,10 @@ import com.nick.industrialcraft.registry.ModBlockEntity;
 import com.nick.industrialcraft.registry.ModDataComponents;
 import com.nick.industrialcraft.registry.ModItems;
 import com.nick.industrialcraft.content.item.CannedFoodData;
+import com.nick.industrialcraft.content.item.StoredEnergyData;
 import com.nick.industrialcraft.api.energy.EnergyTier;
 import com.nick.industrialcraft.api.energy.IEnergyTier;
+import com.nick.industrialcraft.api.wrench.IWrenchable;
 
 /**
  * Canning Machine - an appliance that consumes power directly (no internal storage).
@@ -35,7 +38,7 @@ import com.nick.industrialcraft.api.energy.IEnergyTier;
  * - Max input: 32 EU/t (LV tier)
  * - Recipe: 1 food + 1 tin can = 1 filled tin can
  */
-public class CanningMachineBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier {
+public class CanningMachineBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier, IWrenchable {
 
     public static final int INPUT_SLOT = 0;      // Food input
     public static final int CAN_SLOT = 1;        // Empty tin cans
@@ -349,5 +352,51 @@ public class CanningMachineBlockEntity extends BlockEntity implements MenuProvid
         currentOperationLength = in.getIntOr("CurrentOperationLength", 100);
         lastInputItem = ItemStack.EMPTY;
         lastInputWasValid = false;
+    }
+
+    // ========== IWrenchable Implementation ==========
+
+    @Override
+    public boolean canWrenchRotate(Player player, Direction newFacing) {
+        return newFacing.getAxis().isHorizontal();
+    }
+
+    @Override
+    public Direction getFacing() {
+        return getBlockState().getValue(CanningMachineBlock.FACING);
+    }
+
+    @Override
+    public void setFacing(Direction facing) {
+        if (level != null && !level.isClientSide) {
+            level.setBlock(worldPosition, getBlockState().setValue(CanningMachineBlock.FACING, facing), 3);
+        }
+    }
+
+    @Override
+    public boolean canWrenchRemove(Player player) {
+        return true;
+    }
+
+    @Override
+    public int getStoredEnergy() {
+        return 0;  // Appliance with no internal storage
+    }
+
+    @Override
+    public void setStoredEnergy(int energy) {
+        // Appliance with no internal storage
+    }
+
+    @Override
+    public int getMaxStoredEnergy() {
+        return 0;  // Appliance with no internal storage
+    }
+
+    @Override
+    public ItemStack createWrenchDrop() {
+        ItemStack drop = new ItemStack(ModItems.CANNING_MACHINE_ITEM.get());
+        // No energy storage to preserve
+        return drop;
     }
 }

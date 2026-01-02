@@ -30,7 +30,7 @@ public class BatBoxScreen extends AbstractContainerScreen<BatBoxMenu> {
     private static final int ENERGY_TEX_W = 24;
     private static final int ENERGY_TEX_H = 9;
 
-    // Position in GUI where to paste it
+    // Position in GUI where to paste it (aligned with charge slot at x=56)
     private static final int ENERGY_X = 79;   // Increase = move RIGHT, Decrease = move LEFT
     private static final int ENERGY_Y = 38;   // Increase = move DOWN, Decrease = move UP
 

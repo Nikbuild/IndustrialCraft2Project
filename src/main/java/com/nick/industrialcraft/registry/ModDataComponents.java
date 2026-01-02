@@ -2,6 +2,7 @@ package com.nick.industrialcraft.registry;
 
 import com.nick.industrialcraft.IndustrialCraft;
 import com.nick.industrialcraft.content.item.CannedFoodData;
+import com.nick.industrialcraft.content.item.StoredEnergyData;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -27,5 +28,18 @@ public final class ModDataComponents {
                     builder -> builder
                             .persistent(CannedFoodData.CODEC)
                             .networkSynchronized(CannedFoodData.STREAM_CODEC)
+            );
+
+    /**
+     * Stored energy data component - stores energy value for machine block items.
+     * When a machine is wrenched, its stored energy is preserved in this component.
+     * Items only stack if the stored energy matches exactly.
+     */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<StoredEnergyData>> STORED_ENERGY =
+            DATA_COMPONENTS.registerComponentType(
+                    "stored_energy",
+                    builder -> builder
+                            .persistent(StoredEnergyData.CODEC)
+                            .networkSynchronized(StoredEnergyData.STREAM_CODEC)
             );
 }

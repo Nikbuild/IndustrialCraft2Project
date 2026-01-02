@@ -1,6 +1,7 @@
 package com.nick.industrialcraft.content.block.machine;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -22,8 +23,12 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import com.nick.industrialcraft.IndustrialCraft;
 import com.nick.industrialcraft.registry.ModBlockEntity;
+import com.nick.industrialcraft.registry.ModDataComponents;
+import com.nick.industrialcraft.registry.ModItems;
 import com.nick.industrialcraft.api.energy.EnergyTier;
 import com.nick.industrialcraft.api.energy.IEnergyTier;
+import com.nick.industrialcraft.api.wrench.IWrenchable;
+import com.nick.industrialcraft.content.item.StoredEnergyData;
 
 /**
  * Reimagined Induction Furnace
@@ -43,7 +48,7 @@ import com.nick.industrialcraft.api.energy.IEnergyTier;
  * - Induction Furnace (1 item): 3 EU/t base, 100 ticks, 300 EU per item
  * - Induction Furnace (2 items): 6 EU/t base, 100 ticks, 300 EU per item each
  */
-public class InductionFurnaceBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier {
+public class InductionFurnaceBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier, IWrenchable {
 
     // Tag for items that can be induction smelted (ferrous/conductive materials)
     public static final TagKey<Item> INDUCTION_SMELTABLE = TagKey.create(
@@ -392,5 +397,51 @@ public class InductionFurnaceBlockEntity extends BlockEntity implements MenuProv
         lastInput2 = ItemStack.EMPTY;
         lastInput1WasValid = false;
         lastInput2WasValid = false;
+    }
+
+    // ========== IWrenchable Implementation ==========
+
+    @Override
+    public boolean canWrenchRotate(Player player, Direction newFacing) {
+        return newFacing.getAxis().isHorizontal();
+    }
+
+    @Override
+    public Direction getFacing() {
+        return getBlockState().getValue(InductionFurnaceBlock.FACING);
+    }
+
+    @Override
+    public void setFacing(Direction facing) {
+        if (level != null && !level.isClientSide) {
+            level.setBlock(worldPosition, getBlockState().setValue(InductionFurnaceBlock.FACING, facing), 3);
+        }
+    }
+
+    @Override
+    public boolean canWrenchRemove(Player player) {
+        return true;
+    }
+
+    @Override
+    public int getStoredEnergy() {
+        return 0;  // Flow-based system, no internal storage
+    }
+
+    @Override
+    public void setStoredEnergy(int energy) {
+        // Flow-based system, no internal storage
+    }
+
+    @Override
+    public int getMaxStoredEnergy() {
+        return 0;  // Flow-based system, no internal storage
+    }
+
+    @Override
+    public ItemStack createWrenchDrop() {
+        ItemStack drop = new ItemStack(ModItems.INDUCTION_FURNACE_ITEM.get());
+        // No energy storage to preserve
+        return drop;
     }
 }

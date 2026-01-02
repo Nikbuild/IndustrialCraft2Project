@@ -275,6 +275,7 @@ public class IndustrialCraft {
                                 out.accept(ModItems.METAL_BLOCK_ITEM.get());
 
                                 // Technical Blocks
+                                out.accept(ModItems.IRON_FURNACE_ITEM.get());
                                 out.accept(ModItems.GENERATOR_ITEM.get());
                                 out.accept(ModItems.GEOTHERMAL_GENERATOR_ITEM.get());
                                 out.accept(ModItems.ELECTRIC_FURNACE_ITEM.get());
@@ -347,6 +348,9 @@ public class IndustrialCraft {
         com.nick.industrialcraft.content.block.machine.CanningMachineBlock.registerCapabilities(event);
         com.nick.industrialcraft.content.block.storage.BatBoxBlock.registerCapabilities(event);
         com.nick.industrialcraft.content.block.cable.BaseCableBlock.registerCapabilities(event);
+
+        // Register energy capabilities for electric items (IElectricItem)
+        com.nick.industrialcraft.content.item.ElectricItemCapability.registerCapabilities(event);
     }
 
     /* --------------------------------------------------------------------- */

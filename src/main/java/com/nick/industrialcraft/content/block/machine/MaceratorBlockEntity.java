@@ -1,6 +1,7 @@
 package com.nick.industrialcraft.content.block.machine;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -23,13 +24,16 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import com.nick.industrialcraft.registry.ModBlockEntity;
 import com.nick.industrialcraft.registry.ModItems;
+import com.nick.industrialcraft.registry.ModDataComponents;
 import com.nick.industrialcraft.api.energy.EnergyTier;
 import com.nick.industrialcraft.api.energy.IEnergyTier;
+import com.nick.industrialcraft.api.wrench.IWrenchable;
+import com.nick.industrialcraft.content.item.StoredEnergyData;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class MaceratorBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier {
+public class MaceratorBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier, IWrenchable {
 
     public static final int INPUT_SLOT = 0;
     public static final int BATTERY_SLOT = 1;
@@ -407,5 +411,53 @@ public class MaceratorBlockEntity extends BlockEntity implements MenuProvider, I
         // This ensures lastInputWasValid gets set correctly even after mod updates
         lastInputItem = ItemStack.EMPTY;
         lastInputWasValid = false;
+    }
+
+    // ========== IWrenchable Implementation ==========
+
+    @Override
+    public boolean canWrenchRotate(net.minecraft.world.entity.player.Player player, Direction newFacing) {
+        return newFacing.getAxis().isHorizontal();
+    }
+
+    @Override
+    public Direction getFacing() {
+        return getBlockState().getValue(MaceratorBlock.FACING);
+    }
+
+    @Override
+    public void setFacing(Direction facing) {
+        if (level != null && !level.isClientSide) {
+            level.setBlock(worldPosition, getBlockState().setValue(MaceratorBlock.FACING, facing), 3);
+        }
+    }
+
+    @Override
+    public boolean canWrenchRemove(net.minecraft.world.entity.player.Player player) {
+        return true;
+    }
+
+    @Override
+    public int getStoredEnergy() {
+        return energy;
+    }
+
+    @Override
+    public void setStoredEnergy(int energy) {
+        this.energy = Math.min(energy, MAX_ENERGY);
+    }
+
+    @Override
+    public int getMaxStoredEnergy() {
+        return MAX_ENERGY;
+    }
+
+    @Override
+    public ItemStack createWrenchDrop() {
+        ItemStack drop = new ItemStack(ModItems.MACERATOR_ITEM.get());
+        if (energy > 0) {
+            drop.set(ModDataComponents.STORED_ENERGY.get(), StoredEnergyData.of(energy));
+        }
+        return drop;
     }
 }

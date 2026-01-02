@@ -10,6 +10,7 @@ import com.nick.industrialcraft.client.screen.CompressorScreen;
 import com.nick.industrialcraft.client.screen.RecyclerScreen;
 import com.nick.industrialcraft.client.screen.InductionFurnaceScreen;
 import com.nick.industrialcraft.client.screen.CanningMachineScreen;
+import com.nick.industrialcraft.client.screen.IronFurnaceScreen;
 import com.nick.industrialcraft.client.screen.BatBoxScreen;
 import com.nick.industrialcraft.registry.ModMenus;
 import net.minecraft.resources.ResourceLocation;
@@ -49,6 +50,7 @@ public final class IndustrialCraftClient {
         event.register(ModMenus.RECYCLER.get(), RecyclerScreen::new);
         event.register(ModMenus.INDUCTION_FURNACE.get(), InductionFurnaceScreen::new);
         event.register(ModMenus.CANNING_MACHINE.get(), CanningMachineScreen::new);
+        event.register(ModMenus.IRON_FURNACE.get(), IronFurnaceScreen::new);
         event.register(ModMenus.BATBOX.get(), BatBoxScreen::new);
     }
 

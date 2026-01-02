@@ -1,4 +1,6 @@
-package com.nick.industrialcraft.content.block.storage;
+package com.nick.industrialcraft.content.block.machine;
+
+import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -6,8 +8,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -20,79 +22,61 @@ import com.nick.industrialcraft.registry.ModDataComponents;
 import net.minecraft.world.level.Level;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
 import com.nick.industrialcraft.registry.ModBlockEntity;
-import com.nick.industrialcraft.api.energy.OvervoltageHandler;
-import com.nick.industrialcraft.api.energy.EnergyNetworkManager;
 
 /**
- * BatBox - Basic energy storage block (LV tier)
- *
- * Features:
- * - 40,000 EU storage capacity
- * - 32 EU/t max input/output (LV tier)
- * - Directional output face (6 possible directions)
- * - 2 inventory slots for charging/discharging items
- * - Input from 5 sides, output from 1 side (the output face)
+ * Iron Furnace - A fuel-based furnace that smelts 20% faster than vanilla.
+ * Uses fuel (coal, wood, etc.) instead of electricity.
+ * Operation time: 160 ticks (8 seconds) vs vanilla's 200 ticks (10 seconds).
  */
-public class BatBoxBlock extends Block implements EntityBlock {
+public class IronFurnaceBlock extends Block implements EntityBlock {
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
+    public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
-    // BatBox can face any direction (not just horizontal like machines)
-    public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
-
-    public BatBoxBlock(Properties properties) {
+    public IronFurnaceBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any()
-                .setValue(FACING, Direction.NORTH));
+        this.registerDefaultState(this.defaultBlockState()
+            .setValue(FACING, Direction.SOUTH)
+            .setValue(LIT, false));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(FACING, LIT);
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        // Output face points toward where the player is looking (opposite of player facing)
         return this.defaultBlockState()
-                .setValue(FACING, context.getNearestLookingDirection().getOpposite());
+            .setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
+    @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new BatBoxBlockEntity(pos, state);
+        return new IronFurnaceBlockEntity(pos, state);
     }
 
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        if (level.isClientSide()) {
-            return null;
-        }
-        return type == ModBlockEntity.BATBOX.get()
-                ? (lvl, pos, st, be) -> BatBoxBlockEntity.serverTick(lvl, pos, st, (BatBoxBlockEntity) be)
-                : null;
-    }
-
-    @Override
-    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
+    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        if (!level.isClientSide) {
             BlockEntity be = level.getBlockEntity(pos);
-            if (be instanceof BatBoxBlockEntity batBoxBE) {
-                serverPlayer.openMenu(batBoxBE, pos);
+            if (be instanceof IronFurnaceBlockEntity ironFurnace && player instanceof ServerPlayer sp) {
+                sp.openMenu(ironFurnace, pos);
                 return InteractionResult.CONSUME;
             }
         }
@@ -108,16 +92,21 @@ public class BatBoxBlock extends Block implements EntityBlock {
         return super.useItemOn(stack, state, level, pos, player, hand, hit);
     }
 
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
+        if (blockEntityType != ModBlockEntity.IRON_FURNACE.get()) {
+            return null;
+        }
+        return level.isClientSide ? null : (lvl, pos, st, be) -> IronFurnaceBlockEntity.serverTick(lvl, pos, st, (IronFurnaceBlockEntity) be);
+    }
+
     @Override
     public void destroy(LevelAccessor level, BlockPos pos, BlockState state) {
         if (level instanceof Level realLevel) {
-            if (!realLevel.isClientSide()) {
-                EnergyNetworkManager.invalidateAt(realLevel, pos);
-            }
             BlockEntity be = realLevel.getBlockEntity(pos);
-            if (be instanceof BatBoxBlockEntity batBox) {
-                // Drop all inventory items
-                var inv = batBox.getInventory();
+            if (be instanceof IronFurnaceBlockEntity ironFurnace) {
+                var inv = ironFurnace.getInventory();
                 for (int i = 0; i < inv.getSlots(); i++) {
                     var stack = inv.getStackInSlot(i);
                     if (!stack.isEmpty()) {
@@ -129,34 +118,46 @@ public class BatBoxBlock extends Block implements EntityBlock {
         super.destroy(level, pos, state);
     }
 
-    // ========== Overvoltage Check on Placement ==========
-
+    /**
+     * Spawn flame and smoke particles when the furnace is burning.
+     */
     @Override
-    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
-        super.onPlace(state, level, pos, oldState, isMoving);
-        if (!level.isClientSide && !isMoving) {
-            EnergyNetworkManager.invalidateAt(level, pos);
-            level.scheduleTick(pos, this, 1);
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        if (state.getValue(LIT)) {
+            Direction facing = state.getValue(FACING);
+            double x = pos.getX() + 0.5;
+            double y = pos.getY() + random.nextDouble() * 6.0 / 16.0;
+            double z = pos.getZ() + 0.5;
+            double offset = 0.52;
+            double randOffset = random.nextDouble() * 0.6 - 0.3;
+
+            switch (facing) {
+                case WEST -> {
+                    level.addParticle(net.minecraft.core.particles.ParticleTypes.SMOKE, x - offset, y, z + randOffset, 0, 0, 0);
+                    level.addParticle(net.minecraft.core.particles.ParticleTypes.FLAME, x - offset, y, z + randOffset, 0, 0, 0);
+                }
+                case EAST -> {
+                    level.addParticle(net.minecraft.core.particles.ParticleTypes.SMOKE, x + offset, y, z + randOffset, 0, 0, 0);
+                    level.addParticle(net.minecraft.core.particles.ParticleTypes.FLAME, x + offset, y, z + randOffset, 0, 0, 0);
+                }
+                case NORTH -> {
+                    level.addParticle(net.minecraft.core.particles.ParticleTypes.SMOKE, x + randOffset, y, z - offset, 0, 0, 0);
+                    level.addParticle(net.minecraft.core.particles.ParticleTypes.FLAME, x + randOffset, y, z - offset, 0, 0, 0);
+                }
+                case SOUTH -> {
+                    level.addParticle(net.minecraft.core.particles.ParticleTypes.SMOKE, x + randOffset, y, z + offset, 0, 0, 0);
+                    level.addParticle(net.minecraft.core.particles.ParticleTypes.FLAME, x + randOffset, y, z + offset, 0, 0, 0);
+                }
+                default -> {}
+            }
         }
-    }
-
-    @Override
-    protected void tick(BlockState state, net.minecraft.server.level.ServerLevel level, BlockPos pos, RandomSource random) {
-        OvervoltageHandler.checkOnPlacement(level, pos);
-    }
-
-    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-        event.registerBlockEntity(
-                Capabilities.EnergyStorage.BLOCK,
-                ModBlockEntity.BATBOX.get(),
-                (be, side) -> be.getEnergyStorageForSide(side)
-        );
     }
 
     // ========== Wrench Support ==========
 
     /**
      * Restore stored energy when placing a machine that was wrenched.
+     * (Iron Furnace doesn't have energy, but we implement for consistency)
      */
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
@@ -174,7 +175,7 @@ public class BatBoxBlock extends Block implements EntityBlock {
     }
 
     /**
-     * No drops when mined with pickaxe - use wrench to preserve energy.
+     * No drops when mined with pickaxe - use wrench to preserve contents.
      */
     @Override
     protected List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {

@@ -36,6 +36,7 @@
   "block.industrialcraft.glass_fiber_cable": "Glass Fibre Cable",
   "block.industrialcraft.ultra_low_current_cable": "Tin Cable",
 
+  "block.industrialcraft.iron_furnace": "Iron Furnace",
   "block.industrialcraft.generator": "Generator",
   "block.industrialcraft.geothermal_generator": "Geothermal Generator",
   "block.industrialcraft.electric_furnace": "Electric Furnace",
@@ -76,6 +77,7 @@
   "container.industrialcraft.induction_furnace": "Induction Furnace",
   "container.industrialcraft.batbox": "BatBox",
   "container.industrialcraft.canning_machine": "Canning Machine",
+  "container.industrialcraft.iron_furnace": "Iron Furnace",
 
   "_comment_raw_materials": "=== RAW MATERIALS ===",
 

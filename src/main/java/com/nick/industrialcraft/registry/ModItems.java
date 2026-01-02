@@ -1,8 +1,10 @@
 package com.nick.industrialcraft.registry;
 
 import com.nick.industrialcraft.IndustrialCraft;
+import com.nick.industrialcraft.content.item.ElectricWrenchItem;
 import com.nick.industrialcraft.content.item.FilledTinCanItem;
 import com.nick.industrialcraft.content.item.TreetapItem;
+import com.nick.industrialcraft.content.item.WrenchItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -281,7 +283,7 @@ public final class ModItems {
 
     public static final DeferredItem<Item> WRENCH =
             ITEMS.register("wrench",
-                    () -> new Item(new Item.Properties().setId(
+                    () -> new WrenchItem(new Item.Properties().setId(
                             ResourceKey.create(Registries.ITEM,
                                     ResourceLocation.fromNamespaceAndPath(
                                             IndustrialCraft.MODID, "wrench"))
@@ -369,7 +371,7 @@ public final class ModItems {
 
     public static final DeferredItem<Item> ELECTRIC_WRENCH =
             ITEMS.register("electric_wrench",
-                    () -> new Item(new Item.Properties().setId(
+                    () -> new ElectricWrenchItem(new Item.Properties().setId(
                             ResourceKey.create(Registries.ITEM,
                                     ResourceLocation.fromNamespaceAndPath(
                                             IndustrialCraft.MODID, "electric_wrench"))
@@ -1582,6 +1584,9 @@ public final class ModItems {
 
     public static final DeferredItem<BlockItem> CANNING_MACHINE_ITEM =
             ITEMS.registerSimpleBlockItem("canning_machine", ModBlocks.CANNING_MACHINE);
+
+    public static final DeferredItem<BlockItem> IRON_FURNACE_ITEM =
+            ITEMS.registerSimpleBlockItem("iron_furnace", ModBlocks.IRON_FURNACE);
 
     public static final DeferredItem<BlockItem> REACTOR_CHAMBER_ITEM =
             ITEMS.registerSimpleBlockItem("reactor_chamber", ModBlocks.REACTOR_CHAMBER);

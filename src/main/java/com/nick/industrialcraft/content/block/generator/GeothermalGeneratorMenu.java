@@ -28,11 +28,14 @@ public class GeothermalGeneratorMenu extends AbstractContainerMenu {
         this.blockEntity = blockEntity;
         this.itemHandler = blockEntity.getInventory();
 
-        // Add fuel slot (bottom)
-        this.addSlot(new SlotItemHandler(itemHandler, GeothermalGeneratorBlockEntity.FUEL_SLOT, 65, 53));
+        // Add fuel slot (left, bottom)
+        this.addSlot(new SlotItemHandler(itemHandler, GeothermalGeneratorBlockEntity.FUEL_SLOT, 56, 53));
 
-        // Add output slot for empty cells (top)
-        this.addSlot(new SlotItemHandler(itemHandler, GeothermalGeneratorBlockEntity.OUTPUT_SLOT, 65, 17));
+        // Add output slot for empty cells (left, top)
+        this.addSlot(new SlotItemHandler(itemHandler, GeothermalGeneratorBlockEntity.OUTPUT_SLOT, 56, 17));
+
+        // Add charge slot for electric items (right side)
+        this.addSlot(new SlotItemHandler(itemHandler, GeothermalGeneratorBlockEntity.CHARGE_SLOT, 113, 35));
 
         // Add player inventory (27 slots)
         final int xStart = 8, yStart = 84;

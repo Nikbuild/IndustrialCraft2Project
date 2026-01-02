@@ -1,6 +1,7 @@
 package com.nick.industrialcraft.content.block.machine;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -17,9 +18,12 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import com.nick.industrialcraft.registry.ModBlockEntity;
+import com.nick.industrialcraft.registry.ModDataComponents;
 import com.nick.industrialcraft.registry.ModItems;
 import com.nick.industrialcraft.api.energy.EnergyTier;
 import com.nick.industrialcraft.api.energy.IEnergyTier;
+import com.nick.industrialcraft.api.wrench.IWrenchable;
+import com.nick.industrialcraft.content.item.StoredEnergyData;
 
 /**
  * Recycler Block Entity
@@ -40,7 +44,7 @@ import com.nick.industrialcraft.api.energy.IEnergyTier;
  * - Operation time: 45 ticks (2.25 seconds)
  * - Max input: 32 EU/t (LV tier)
  */
-public class RecyclerBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier {
+public class RecyclerBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier, IWrenchable {
 
     public static final int INPUT_SLOT = 0;
     public static final int BATTERY_SLOT = 1;
@@ -460,5 +464,53 @@ public class RecyclerBlockEntity extends BlockEntity implements MenuProvider, IE
         // Force revalidation on first tick after world load
         lastInputItem = ItemStack.EMPTY;
         lastInputWasValid = false;
+    }
+
+    // ========== IWrenchable Implementation ==========
+
+    @Override
+    public boolean canWrenchRotate(Player player, Direction newFacing) {
+        return newFacing.getAxis().isHorizontal();
+    }
+
+    @Override
+    public Direction getFacing() {
+        return getBlockState().getValue(RecyclerBlock.FACING);
+    }
+
+    @Override
+    public void setFacing(Direction facing) {
+        if (level != null && !level.isClientSide) {
+            level.setBlock(worldPosition, getBlockState().setValue(RecyclerBlock.FACING, facing), 3);
+        }
+    }
+
+    @Override
+    public boolean canWrenchRemove(Player player) {
+        return true;
+    }
+
+    @Override
+    public int getStoredEnergy() {
+        return energy;
+    }
+
+    @Override
+    public void setStoredEnergy(int energy) {
+        this.energy = Math.min(energy, MAX_ENERGY);
+    }
+
+    @Override
+    public int getMaxStoredEnergy() {
+        return MAX_ENERGY;
+    }
+
+    @Override
+    public ItemStack createWrenchDrop() {
+        ItemStack drop = new ItemStack(ModItems.RECYCLER_ITEM.get());
+        if (energy > 0) {
+            drop.set(ModDataComponents.STORED_ENERGY.get(), StoredEnergyData.of(energy));
+        }
+        return drop;
     }
 }

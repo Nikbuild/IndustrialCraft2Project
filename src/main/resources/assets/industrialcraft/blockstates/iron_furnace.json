@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "facing=north,lit=false": { "model": "industrialcraft:block/technical/iron_furnace" },
+    "facing=south,lit=false": { "model": "industrialcraft:block/technical/iron_furnace", "y": 180 },
+    "facing=west,lit=false":  { "model": "industrialcraft:block/technical/iron_furnace", "y": 270 },
+    "facing=east,lit=false":  { "model": "industrialcraft:block/technical/iron_furnace", "y": 90 },
+    "facing=north,lit=true":  { "model": "industrialcraft:block/technical/iron_furnace_on" },
+    "facing=south,lit=true":  { "model": "industrialcraft:block/technical/iron_furnace_on", "y": 180 },
+    "facing=west,lit=true":   { "model": "industrialcraft:block/technical/iron_furnace_on", "y": 270 },
+    "facing=east,lit=true":   { "model": "industrialcraft:block/technical/iron_furnace_on", "y": 90 }
+  }
+}

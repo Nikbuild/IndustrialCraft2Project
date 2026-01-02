@@ -388,7 +388,7 @@ public final class ModBlocks {
             () -> new CopperCableBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(0.5f)
+                            .strength(0.2f)
                             .noOcclusion()
                             .isRedstoneConductor((s, l, p) -> false)
                             .setId(ResourceKey.create(
@@ -406,7 +406,7 @@ public final class ModBlocks {
             () -> new InsulatedCopperCableBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(0.5f)
+                            .strength(0.2f)
                             .noOcclusion()
                             .isRedstoneConductor((s, l, p) -> false)
                             .setId(ResourceKey.create(
@@ -424,7 +424,7 @@ public final class ModBlocks {
             () -> new GoldCableBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(0.5f)
+                            .strength(0.2f)
                             .noOcclusion()
                             .isRedstoneConductor((s, l, p) -> false)
                             .setId(ResourceKey.create(
@@ -442,7 +442,7 @@ public final class ModBlocks {
             () -> new GoldCableInsulatedBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(0.5f)
+                            .strength(0.2f)
                             .noOcclusion()
                             .isRedstoneConductor((s, l, p) -> false)
                             .setId(ResourceKey.create(
@@ -460,7 +460,7 @@ public final class ModBlocks {
             () -> new GoldCableDoubleInsulatedBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(0.5f)
+                            .strength(0.2f)
                             .noOcclusion()
                             .isRedstoneConductor((s, l, p) -> false)
                             .setId(ResourceKey.create(
@@ -478,7 +478,7 @@ public final class ModBlocks {
             () -> new HighVoltageCableBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(0.5f)
+                            .strength(0.2f)
                             .noOcclusion()
                             .isRedstoneConductor((s, l, p) -> false)
                             .setId(ResourceKey.create(
@@ -496,7 +496,7 @@ public final class ModBlocks {
             () -> new HighVoltageCableInsulatedBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(0.5f)
+                            .strength(0.2f)
                             .noOcclusion()
                             .isRedstoneConductor((s, l, p) -> false)
                             .setId(ResourceKey.create(
@@ -514,7 +514,7 @@ public final class ModBlocks {
             () -> new HighVoltageCableDoubleInsulatedBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(0.5f)
+                            .strength(0.2f)
                             .noOcclusion()
                             .isRedstoneConductor((s, l, p) -> false)
                             .setId(ResourceKey.create(
@@ -532,7 +532,7 @@ public final class ModBlocks {
             () -> new HighVoltageCableQuadrupleInsulatedBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(0.5f)
+                            .strength(0.2f)
                             .noOcclusion()
                             .isRedstoneConductor((s, l, p) -> false)
                             .setId(ResourceKey.create(
@@ -550,7 +550,7 @@ public final class ModBlocks {
             () -> new GlassFiberCableBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(0.5f)
+                            .strength(0.2f)
                             .noOcclusion()
                             .isRedstoneConductor((s, l, p) -> false)
                             .setId(ResourceKey.create(
@@ -568,7 +568,7 @@ public final class ModBlocks {
             () -> new UltraLowCurrentCableBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(0.5f)
+                            .strength(0.2f)
                             .noOcclusion()
                             .isRedstoneConductor((s, l, p) -> false)
                             .setId(ResourceKey.create(
@@ -590,7 +590,7 @@ public final class ModBlocks {
             () -> new GeneratorBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(3.0f)
+                            .strength(5.0f)
                             .requiresCorrectToolForDrops()
                             .setId(ResourceKey.create(
                                     Registries.BLOCK,
@@ -607,7 +607,7 @@ public final class ModBlocks {
             () -> new GeothermalGeneratorBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(3.0f)
+                            .strength(5.0f)
                             .requiresCorrectToolForDrops()
                             .setId(ResourceKey.create(
                                     Registries.BLOCK,
@@ -624,7 +624,7 @@ public final class ModBlocks {
             () -> new ElectricFurnaceBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(3.0f)
+                            .strength(5.0f)
                             .requiresCorrectToolForDrops()
                             .setId(ResourceKey.create(
                                     Registries.BLOCK,
@@ -641,7 +641,7 @@ public final class ModBlocks {
             () -> new com.nick.industrialcraft.content.block.machine.MaceratorBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(3.0f)
+                            .strength(5.0f)
                             .requiresCorrectToolForDrops()
                             .setId(ResourceKey.create(
                                     Registries.BLOCK,
@@ -658,7 +658,7 @@ public final class ModBlocks {
             () -> new ExtractorBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(3.0f)
+                            .strength(5.0f)
                             .requiresCorrectToolForDrops()
                             .setId(ResourceKey.create(
                                     Registries.BLOCK,
@@ -675,7 +675,7 @@ public final class ModBlocks {
             () -> new CompressorBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(3.0f)
+                            .strength(5.0f)
                             .requiresCorrectToolForDrops()
                             .setId(ResourceKey.create(
                                     Registries.BLOCK,
@@ -692,7 +692,7 @@ public final class ModBlocks {
             () -> new RecyclerBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(3.0f)
+                            .strength(5.0f)
                             .requiresCorrectToolForDrops()
                             .setId(ResourceKey.create(
                                     Registries.BLOCK,
@@ -709,7 +709,7 @@ public final class ModBlocks {
             () -> new InductionFurnaceBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(3.0f)
+                            .strength(5.0f)
                             .requiresCorrectToolForDrops()
                             .setId(ResourceKey.create(
                                     Registries.BLOCK,
@@ -726,7 +726,7 @@ public final class ModBlocks {
             () -> new BatBoxBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.WOOD)
-                            .strength(2.0f)
+                            .strength(5.0f)
                             .requiresCorrectToolForDrops()
                             .setId(ResourceKey.create(
                                     Registries.BLOCK,
@@ -743,7 +743,7 @@ public final class ModBlocks {
             () -> new CanningMachineBlock(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(3.0f)
+                            .strength(5.0f)
                             .requiresCorrectToolForDrops()
                             .setId(ResourceKey.create(
                                     Registries.BLOCK,
@@ -755,12 +755,30 @@ public final class ModBlocks {
             )
     );
 
+    public static final DeferredBlock<Block> IRON_FURNACE = BLOCKS.register(
+            "iron_furnace",
+            () -> new com.nick.industrialcraft.content.block.machine.IronFurnaceBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.METAL)
+                            .strength(5.0f)
+                            .requiresCorrectToolForDrops()
+                            .lightLevel(state -> state.getValue(com.nick.industrialcraft.content.block.machine.IronFurnaceBlock.LIT) ? 13 : 0)
+                            .setId(ResourceKey.create(
+                                    Registries.BLOCK,
+                                    ResourceLocation.fromNamespaceAndPath(
+                                            IndustrialCraft.MODID,
+                                            "iron_furnace"
+                                    )
+                            ))
+            )
+    );
+
     public static final DeferredBlock<Block> REACTOR_CHAMBER = BLOCKS.register(
             "reactor_chamber",
             () -> new Block(
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.METAL)
-                            .strength(3.0f)
+                            .strength(2.0f)
                             .requiresCorrectToolForDrops()
                             .setId(ResourceKey.create(
                                     Registries.BLOCK,

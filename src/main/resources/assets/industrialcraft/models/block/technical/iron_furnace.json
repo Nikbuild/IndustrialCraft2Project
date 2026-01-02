@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "up": "industrialcraft:block/iron_furnace_top",
+    "down": "industrialcraft:block/iron_furnace_bottom",
+    "north": "industrialcraft:block/iron_furnace_front",
+    "south": "industrialcraft:block/iron_furnace_leftrightback",
+    "east": "industrialcraft:block/iron_furnace_leftrightback",
+    "west": "industrialcraft:block/iron_furnace_leftrightback",
+    "particle": "industrialcraft:block/iron_furnace_front"
+  }
+}

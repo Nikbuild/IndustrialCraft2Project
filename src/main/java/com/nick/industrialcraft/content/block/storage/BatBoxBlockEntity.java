@@ -9,6 +9,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -19,10 +20,15 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.capabilities.Capabilities;
 
 import com.nick.industrialcraft.registry.ModBlockEntity;
+import com.nick.industrialcraft.registry.ModDataComponents;
+import com.nick.industrialcraft.registry.ModItems;
 import com.nick.industrialcraft.api.energy.EnergyTier;
+import com.nick.industrialcraft.api.energy.IElectricItem;
 import com.nick.industrialcraft.api.energy.IEnergyTier;
 import com.nick.industrialcraft.api.energy.EnergyNetworkManager;
 import com.nick.industrialcraft.api.energy.EnergyNetworkManager.MachineConnection;
+import com.nick.industrialcraft.api.wrench.IWrenchable;
+import com.nick.industrialcraft.content.item.StoredEnergyData;
 
 import java.util.*;
 
@@ -40,7 +46,7 @@ import java.util.*;
  * - Slot 0 (top): Charge items FROM BatBox storage
  * - Slot 1 (bottom): Discharge items INTO BatBox storage
  */
-public class BatBoxBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier {
+public class BatBoxBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier, IWrenchable {
 
     // Slot indices
     public static final int CHARGE_SLOT = 0;     // Items charged FROM BatBox
@@ -188,13 +194,28 @@ public class BatBoxBlockEntity extends BlockEntity implements MenuProvider, IEne
         // Handle charging items in CHARGE_SLOT (transfer energy FROM BatBox TO item)
         var chargeStack = be.inventory.getStackInSlot(CHARGE_SLOT);
         if (!chargeStack.isEmpty() && be.energyStored > 0) {
-            IEnergyStorage itemStorage = chargeStack.getCapability(Capabilities.EnergyStorage.ITEM);
-            if (itemStorage != null && itemStorage.canReceive()) {
-                int toTransfer = Math.min(be.energyStored, MAX_TRANSFER);
-                int transferred = itemStorage.receiveEnergy(toTransfer, false);
-                if (transferred > 0) {
-                    be.energyStored -= transferred;
-                    changed = true;
+            // Check if item is an IElectricItem and if BatBox tier is high enough
+            if (chargeStack.getItem() instanceof IElectricItem electricItem) {
+                // BatBox is LV - can only charge LV items
+                EnergyTier itemTier = electricItem.getTier(chargeStack);
+                if (itemTier.getTierLevel() <= EnergyTier.LV.getTierLevel()) {
+                    int toTransfer = Math.min(be.energyStored, MAX_TRANSFER);
+                    int transferred = electricItem.charge(chargeStack, toTransfer, EnergyTier.LV, false, false);
+                    if (transferred > 0) {
+                        be.energyStored -= transferred;
+                        changed = true;
+                    }
+                }
+            } else {
+                // Non-IElectricItem - use capability (for compatibility with other mods)
+                IEnergyStorage itemStorage = chargeStack.getCapability(Capabilities.EnergyStorage.ITEM);
+                if (itemStorage != null && itemStorage.canReceive()) {
+                    int toTransfer = Math.min(be.energyStored, MAX_TRANSFER);
+                    int transferred = itemStorage.receiveEnergy(toTransfer, false);
+                    if (transferred > 0) {
+                        be.energyStored -= transferred;
+                        changed = true;
+                    }
                 }
             }
         }
@@ -202,14 +223,28 @@ public class BatBoxBlockEntity extends BlockEntity implements MenuProvider, IEne
         // Handle discharging items in DISCHARGE_SLOT (transfer energy FROM item TO BatBox)
         var dischargeStack = be.inventory.getStackInSlot(DISCHARGE_SLOT);
         if (!dischargeStack.isEmpty() && be.energyStored < MAX_ENERGY) {
-            IEnergyStorage itemStorage = dischargeStack.getCapability(Capabilities.EnergyStorage.ITEM);
-            if (itemStorage != null && itemStorage.canExtract()) {
-                int spaceLeft = MAX_ENERGY - be.energyStored;
-                int toExtract = Math.min(spaceLeft, MAX_TRANSFER);
-                int extracted = itemStorage.extractEnergy(toExtract, false);
-                if (extracted > 0) {
-                    be.energyStored += extracted;
-                    changed = true;
+            // Check if item is an IElectricItem that can provide energy
+            if (dischargeStack.getItem() instanceof IElectricItem electricItem) {
+                if (electricItem.canProvideEnergy(dischargeStack)) {
+                    int spaceLeft = MAX_ENERGY - be.energyStored;
+                    int toExtract = Math.min(spaceLeft, MAX_TRANSFER);
+                    int extracted = electricItem.discharge(dischargeStack, toExtract, EnergyTier.LV, false, false);
+                    if (extracted > 0) {
+                        be.energyStored += extracted;
+                        changed = true;
+                    }
+                }
+            } else {
+                // Non-IElectricItem - use capability (for compatibility with other mods)
+                IEnergyStorage itemStorage = dischargeStack.getCapability(Capabilities.EnergyStorage.ITEM);
+                if (itemStorage != null && itemStorage.canExtract()) {
+                    int spaceLeft = MAX_ENERGY - be.energyStored;
+                    int toExtract = Math.min(spaceLeft, MAX_TRANSFER);
+                    int extracted = itemStorage.extractEnergy(toExtract, false);
+                    if (extracted > 0) {
+                        be.energyStored += extracted;
+                        changed = true;
+                    }
                 }
             }
         }
@@ -333,5 +368,53 @@ public class BatBoxBlockEntity extends BlockEntity implements MenuProvider, IEne
 
     public int getMaxTransfer() {
         return MAX_TRANSFER;
+    }
+
+    // ========== IWrenchable Implementation ==========
+
+    @Override
+    public boolean canWrenchRotate(Player player, Direction newFacing) {
+        return newFacing.getAxis().isHorizontal();
+    }
+
+    @Override
+    public Direction getFacing() {
+        return getBlockState().getValue(BatBoxBlock.FACING);
+    }
+
+    @Override
+    public void setFacing(Direction facing) {
+        if (level != null && !level.isClientSide) {
+            level.setBlock(worldPosition, getBlockState().setValue(BatBoxBlock.FACING, facing), 3);
+        }
+    }
+
+    @Override
+    public boolean canWrenchRemove(Player player) {
+        return true;
+    }
+
+    @Override
+    public int getStoredEnergy() {
+        return energyStored;
+    }
+
+    @Override
+    public void setStoredEnergy(int energy) {
+        this.energyStored = Math.min(energy, MAX_ENERGY);
+    }
+
+    @Override
+    public int getMaxStoredEnergy() {
+        return MAX_ENERGY;
+    }
+
+    @Override
+    public ItemStack createWrenchDrop() {
+        ItemStack drop = new ItemStack(ModItems.BATBOX_ITEM.get());
+        if (energyStored > 0) {
+            drop.set(ModDataComponents.STORED_ENERGY.get(), StoredEnergyData.of(energyStored));
+        }
+        return drop;
     }
 }

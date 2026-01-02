@@ -6,13 +6,25 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import com.nick.industrialcraft.content.item.WrenchItem;
+import com.nick.industrialcraft.content.item.StoredEnergyData;
+import com.nick.industrialcraft.api.wrench.IWrenchable;
+import com.nick.industrialcraft.registry.ModDataComponents;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import java.util.Collections;
+import java.util.List;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -60,6 +72,15 @@ public class GeothermalGeneratorBlock extends Block implements EntityBlock {
         return InteractionResult.SUCCESS;
     }
 
+    @Override
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        // If holding a wrench, don't open GUI - let the wrench handle it
+        if (stack.getItem() instanceof WrenchItem) {
+            return InteractionResult.PASS;
+        }
+        return super.useItemOn(stack, state, level, pos, player, hand, hit);
+    }
+
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
@@ -100,7 +121,7 @@ public class GeothermalGeneratorBlock extends Block implements EntityBlock {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState()
-            .setValue(FACING, context.getHorizontalDirection());
+            .setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
     // ========== Overvoltage Check on Placement ==========
@@ -132,5 +153,48 @@ public class GeothermalGeneratorBlock extends Block implements EntityBlock {
             },
             com.nick.industrialcraft.registry.ModBlocks.GEOTHERMAL_GENERATOR.get()
         );
+    }
+
+    // ========== Wrench Support ==========
+
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+        if (!level.isClientSide) {
+            StoredEnergyData energyData = stack.get(ModDataComponents.STORED_ENERGY.get());
+            if (energyData != null && energyData.hasEnergy()) {
+                BlockEntity be = level.getBlockEntity(pos);
+                if (be instanceof IWrenchable wrenchable) {
+                    wrenchable.setStoredEnergy(energyData.energy());
+                    be.setChanged();
+                }
+            }
+        }
+    }
+
+    @Override
+    protected List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    protected void attack(BlockState state, Level level, BlockPos pos, Player player) {
+        super.attack(state, level, pos, player);
+        if (player.getMainHandItem().getItem() instanceof WrenchItem) {
+            return;
+        }
+        if (!level.isClientSide) {
+            level.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5f, 0.8f);
+        }
+    }
+
+    @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide) {
+            if (!(player.getMainHandItem().getItem() instanceof WrenchItem)) {
+                level.playSound(null, pos, SoundEvents.ANVIL_DESTROY, SoundSource.BLOCKS, 1.0f, 0.5f);
+            }
+        }
+        return super.playerWillDestroy(level, pos, state, player);
     }
 }

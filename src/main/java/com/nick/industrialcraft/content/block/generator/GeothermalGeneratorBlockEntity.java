@@ -20,23 +20,42 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.capabilities.Capabilities;
 
 import com.nick.industrialcraft.registry.ModBlockEntity;
+import com.nick.industrialcraft.registry.ModDataComponents;
 import com.nick.industrialcraft.api.energy.EnergyTier;
+import com.nick.industrialcraft.api.energy.IElectricItem;
 import com.nick.industrialcraft.api.energy.IEnergyTier;
 import com.nick.industrialcraft.api.energy.EnergyNetworkManager;
 import com.nick.industrialcraft.api.energy.EnergyNetworkManager.MachineConnection;
+import com.nick.industrialcraft.api.wrench.IWrenchable;
+import com.nick.industrialcraft.content.item.StoredEnergyData;
 
 import java.util.*;
 
-public class GeothermalGeneratorBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier {
+public class GeothermalGeneratorBlockEntity extends BlockEntity implements MenuProvider, IEnergyTier, IWrenchable {
 
     public static final int FUEL_SLOT = 0;
     public static final int OUTPUT_SLOT = 1;
-    public static final int SLOTS = 2;
+    public static final int CHARGE_SLOT = 2;  // Slot for charging electric items
+    public static final int SLOTS = 3;
+
+    // Transfer rate for charging items (LV tier)
+    private static final int CHARGE_TRANSFER_RATE = 32;
 
     private final ItemStackHandler inventory = new ItemStackHandler(SLOTS) {
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
+        }
+
+        @Override
+        public void setSize(int size) {
+            // Don't allow deserialization to resize - keep SLOTS size
+            // This prevents old saves from shrinking the inventory
+            if (size < SLOTS) {
+                super.setSize(SLOTS);
+            } else {
+                super.setSize(size);
+            }
         }
     };
 
@@ -297,6 +316,37 @@ public class GeothermalGeneratorBlockEntity extends BlockEntity implements MenuP
             be.energy = MAX_ENERGY;
         }
 
+        // Charge items in the charging slot (transfer energy FROM Generator TO item)
+        // Safety check for old saves that may have fewer slots
+        if (be.energy > 0 && CHARGE_SLOT < be.inventory.getSlots()) {
+            var chargeStack = be.inventory.getStackInSlot(CHARGE_SLOT);
+            if (!chargeStack.isEmpty()) {
+                // Check if item is an IElectricItem and if Generator tier (LV) is high enough
+                if (chargeStack.getItem() instanceof IElectricItem electricItem) {
+                    EnergyTier itemTier = electricItem.getTier(chargeStack);
+                    if (itemTier.getTierLevel() <= EnergyTier.LV.getTierLevel()) {
+                        int toTransfer = Math.min(be.energy, CHARGE_TRANSFER_RATE);
+                        int transferred = electricItem.charge(chargeStack, toTransfer, EnergyTier.LV, false, false);
+                        if (transferred > 0) {
+                            be.energy -= transferred;
+                            needsUpdate = true;
+                        }
+                    }
+                } else {
+                    // Non-IElectricItem - use capability (for compatibility with other mods)
+                    IEnergyStorage itemStorage = chargeStack.getCapability(Capabilities.EnergyStorage.ITEM);
+                    if (itemStorage != null && itemStorage.canReceive()) {
+                        int toTransfer = Math.min(be.energy, CHARGE_TRANSFER_RATE);
+                        int transferred = itemStorage.receiveEnergy(toTransfer, false);
+                        if (transferred > 0) {
+                            be.energy -= transferred;
+                            needsUpdate = true;
+                        }
+                    }
+                }
+            }
+        }
+
         // Output energy to adjacent machines
         if (be.energy > 0) {
             be.outputEnergy(level, pos);
@@ -329,5 +379,53 @@ public class GeothermalGeneratorBlockEntity extends BlockEntity implements MenuP
         fuel = in.getIntOr("Fuel", 0);
         energy = in.getIntOr("Energy", 0);
         powered = in.getBooleanOr("Powered", false);
+    }
+
+    // ========== IWrenchable Implementation ==========
+
+    @Override
+    public boolean canWrenchRotate(net.minecraft.world.entity.player.Player player, Direction newFacing) {
+        return newFacing.getAxis().isHorizontal();
+    }
+
+    @Override
+    public Direction getFacing() {
+        return getBlockState().getValue(GeothermalGeneratorBlock.FACING);
+    }
+
+    @Override
+    public void setFacing(Direction facing) {
+        if (level != null && !level.isClientSide) {
+            level.setBlock(worldPosition, getBlockState().setValue(GeothermalGeneratorBlock.FACING, facing), 3);
+        }
+    }
+
+    @Override
+    public boolean canWrenchRemove(net.minecraft.world.entity.player.Player player) {
+        return true;
+    }
+
+    @Override
+    public int getStoredEnergy() {
+        return energy;
+    }
+
+    @Override
+    public void setStoredEnergy(int energy) {
+        this.energy = Math.min(energy, MAX_ENERGY);
+    }
+
+    @Override
+    public int getMaxStoredEnergy() {
+        return MAX_ENERGY;
+    }
+
+    @Override
+    public ItemStack createWrenchDrop() {
+        ItemStack drop = new ItemStack(ModItems.GEOTHERMAL_GENERATOR_ITEM.get());
+        if (energy > 0) {
+            drop.set(ModDataComponents.STORED_ENERGY.get(), StoredEnergyData.of(energy));
+        }
+        return drop;
     }
 }

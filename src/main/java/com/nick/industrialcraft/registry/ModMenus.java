@@ -10,6 +10,7 @@ import com.nick.industrialcraft.content.block.machine.CompressorMenu;
 import com.nick.industrialcraft.content.block.machine.RecyclerMenu;
 import com.nick.industrialcraft.content.block.machine.InductionFurnaceMenu;
 import com.nick.industrialcraft.content.block.machine.CanningMachineMenu;
+import com.nick.industrialcraft.content.block.machine.IronFurnaceMenu;
 import com.nick.industrialcraft.content.block.storage.BatBoxMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
@@ -82,5 +83,11 @@ public final class ModMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<CanningMachineMenu>> CANNING_MACHINE =
             MENUS.register("canning_machine", () ->
                     IMenuTypeExtension.create((id, inv, buf) -> new CanningMachineMenu(id, inv, buf))
+            );
+
+    // Iron Furnace Menu
+    public static final DeferredHolder<MenuType<?>, MenuType<IronFurnaceMenu>> IRON_FURNACE =
+            MENUS.register("iron_furnace", () ->
+                    IMenuTypeExtension.create((id, inv, buf) -> new IronFurnaceMenu(id, inv, buf))
             );
 }

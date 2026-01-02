@@ -35,11 +35,10 @@ public class BatBoxMenu extends AbstractContainerMenu {
         this.itemHandler = blockEntity.getInventory();
 
         // Charge slot (top) - items charged FROM BatBox storage
-        // Position based on GUIElectricBlock layout
-        this.addSlot(new SlotItemHandler(itemHandler, BatBoxBlockEntity.CHARGE_SLOT, 80, 17));
+        this.addSlot(new SlotItemHandler(itemHandler, BatBoxBlockEntity.CHARGE_SLOT, 56, 17));
 
         // Discharge slot (bottom) - items discharged INTO BatBox storage
-        this.addSlot(new SlotItemHandler(itemHandler, BatBoxBlockEntity.DISCHARGE_SLOT, 80, 53));
+        this.addSlot(new SlotItemHandler(itemHandler, BatBoxBlockEntity.DISCHARGE_SLOT, 56, 53));
 
         // Player inventory (27 slots)
         for (int row = 0; row < 3; row++) {
