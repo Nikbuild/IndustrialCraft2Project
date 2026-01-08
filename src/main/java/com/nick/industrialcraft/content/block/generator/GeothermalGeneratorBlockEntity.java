@@ -21,9 +21,12 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 
 import com.nick.industrialcraft.registry.ModBlockEntity;
 import com.nick.industrialcraft.registry.ModDataComponents;
+import com.nick.industrialcraft.registry.ModSounds;
+import net.minecraft.sounds.SoundSource;
 import com.nick.industrialcraft.api.energy.EnergyTier;
 import com.nick.industrialcraft.api.energy.IElectricItem;
 import com.nick.industrialcraft.api.energy.IEnergyTier;
+import com.nick.industrialcraft.api.energy.IVoltageTransformer;
 import com.nick.industrialcraft.api.energy.EnergyNetworkManager;
 import com.nick.industrialcraft.api.energy.EnergyNetworkManager.MachineConnection;
 import com.nick.industrialcraft.api.wrench.IWrenchable;
@@ -73,6 +76,9 @@ public class GeothermalGeneratorBlockEntity extends BlockEntity implements MenuP
     private static final int MAX_ENERGY = 1000;   // Buffer for smooth operation
     private static final int ENERGY_PER_TICK = 20;    // 20 EU/t generation (IC2-accurate)
     private static final int MAX_OUTPUT = 20;     // 20 EU/t output (IC2-accurate)
+    private static final int SOUND_INTERVAL = 25;
+
+    private int soundTimer = 0;
 
     // NeoForge Energy Capability (for compatibility with other mods)
     private final IEnergyStorage energyStorage = new IEnergyStorage() {
@@ -204,6 +210,33 @@ public class GeothermalGeneratorBlockEntity extends BlockEntity implements MenuP
             level, pos, Direction.values()
         );
 
+        // Also check for direct neighbors in case the network scan misses them
+        for (Direction dir : Direction.values()) {
+            BlockPos directNeighbor = pos.relative(dir);
+            BlockEntity directBe = level.getBlockEntity(directNeighbor);
+            if (directBe != null && !(directBe instanceof com.nick.industrialcraft.content.block.cable.CableBlockEntity)) {
+                Direction accessSide = dir.getOpposite();
+                IEnergyStorage directStorage = level.getCapability(
+                    net.neoforged.neoforge.capabilities.Capabilities.EnergyStorage.BLOCK,
+                    directNeighbor,
+                    accessSide
+                );
+                if (directStorage != null && directStorage.canReceive()) {
+                    boolean alreadyInList = false;
+                    for (MachineConnection mc : machines) {
+                        if (mc.pos().equals(directNeighbor)) {
+                            alreadyInList = true;
+                            break;
+                        }
+                    }
+                    if (!alreadyInList) {
+                        machines = new ArrayList<>(machines);
+                        machines.add(new MachineConnection(directNeighbor, directStorage, directBe, accessSide));
+                    }
+                }
+            }
+        }
+
         if (machines.isEmpty() || energy <= 0) return;
 
         // Filter to only machines that actually want energy
@@ -227,7 +260,15 @@ public class GeothermalGeneratorBlockEntity extends BlockEntity implements MenuP
         // Transfer to each machine
         for (MachineConnection machine : needyMachines) {
             // Check tier compatibility before transferring
-            if (machine.blockEntity() instanceof IEnergyTier tieredMachine) {
+            // For transformers, use side-specific check; for regular machines, use global check
+            if (machine.blockEntity() instanceof IVoltageTransformer transformer) {
+                // Transformer - check the specific side we're connecting to
+                if (!transformer.canSideReceive(machine.accessSide(), packetSize)) {
+                    // This side of the transformer can't handle this voltage - EXPLODE!
+                    explodeMachine(level, machine.pos());
+                    continue;
+                }
+            } else if (machine.blockEntity() instanceof IEnergyTier tieredMachine) {
                 if (!tieredMachine.canSafelyReceive(packetSize)) {
                     // Machine can't handle this voltage - EXPLODE!
                     explodeMachine(level, machine.pos());
@@ -307,8 +348,16 @@ public class GeothermalGeneratorBlockEntity extends BlockEntity implements MenuP
             be.energy += ENERGY_PER_TICK;
             be.powered = true;
             needsUpdate = true;
+
+            // Play operation sound periodically
+            be.soundTimer++;
+            if (be.soundTimer >= SOUND_INTERVAL) {
+                level.playSound(null, pos, ModSounds.GEOTHERMAL_GENERATOR.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
+                be.soundTimer = 0;
+            }
         } else if (be.fuel <= 0) {
             be.powered = false;
+            be.soundTimer = 0;
         }
 
         // Clamp energy to max

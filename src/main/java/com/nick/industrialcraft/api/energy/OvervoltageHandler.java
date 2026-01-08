@@ -83,6 +83,17 @@ public class OvervoltageHandler {
             return false;
         }
 
+        // Check if overvoltage explosions are enabled
+        if (!Config.ENABLE_OVERVOLTAGE_EXPLOSIONS.get()) {
+            return false;
+        }
+
+        // Special handling for transformers - they have different voltage tiers on different sides
+        BlockEntity placedBe = level.getBlockEntity(placedPos);
+        if (placedBe instanceof IVoltageTransformer transformer) {
+            return checkTransformerConnections(level, placedPos, transformer);
+        }
+
         // Scan the network to find all sources and consumers
         Set<BlockPos> visitedCables = new HashSet<>();
         List<TieredBlock> sources = new ArrayList<>();
@@ -90,11 +101,6 @@ public class OvervoltageHandler {
 
         // Start scanning from the placed position
         scanNetworkFromPosition(level, placedPos, visitedCables, sources, consumers);
-
-        // Check if overvoltage explosions are enabled
-        if (!Config.ENABLE_OVERVOLTAGE_EXPLOSIONS.get()) {
-            return false;
-        }
 
         // Check all source-consumer pairs for overvoltage
         boolean hadOvervoltage = false;
@@ -105,6 +111,59 @@ public class OvervoltageHandler {
                     // Overvoltage! Apply consequence to the consumer
                     applyConsequence(level, consumer.pos, tierGap);
                     hadOvervoltage = true;
+                }
+            }
+        }
+
+        return hadOvervoltage;
+    }
+
+    /**
+     * Check transformer connections for overvoltage.
+     * Transformers have different voltage tiers on different sides, so we need
+     * to check each side's connected machines against that side's output tier.
+     *
+     * For example, an LV Transformer:
+     * - HIGH side (front) outputs MV (128 EU) - machines there must handle MV
+     * - LOW sides (5 other faces) output LV (32 EU) - machines there must handle LV
+     *
+     * @param level The world level
+     * @param transformerPos The transformer position
+     * @param transformer The transformer interface
+     * @return true if an overvoltage event occurred
+     */
+    private static boolean checkTransformerConnections(Level level, BlockPos transformerPos, IVoltageTransformer transformer) {
+        boolean hadOvervoltage = false;
+
+        Config.debugLog("Checking transformer connections at {}", transformerPos);
+
+        // Check each side of the transformer
+        for (Direction side : Direction.values()) {
+            EnergyTier outputTier = transformer.getTierForSide(side);
+            Config.debugLog("  Side {}: output tier = {}", side, outputTier);
+
+            // Find machines connected to this side through cables
+            List<EnergyNetworkManager.MachineConnection> connectedMachines =
+                EnergyNetworkManager.getConnectedMachines(level, transformerPos, side);
+
+            for (EnergyNetworkManager.MachineConnection machine : connectedMachines) {
+                // Skip other transformers
+                if (machine.blockEntity() instanceof IVoltageTransformer) {
+                    continue;
+                }
+
+                if (machine.blockEntity() instanceof IEnergyTier tieredMachine) {
+                    EnergyTier machineTier = tieredMachine.getEnergyTier();
+                    int tierGap = EnergyTier.getTierGap(outputTier, machineTier);
+
+                    Config.debugLog("    Machine at {}: tier = {}, tierGap = {}", machine.pos(), machineTier, tierGap);
+
+                    if (tierGap > 0) {
+                        // Machine can't handle this transformer side's voltage!
+                        Config.debugLog("    OVERVOLTAGE! Applying consequence to machine at {}", machine.pos());
+                        applyConsequence(level, machine.pos(), tierGap);
+                        hadOvervoltage = true;
+                    }
                 }
             }
         }
@@ -196,6 +255,10 @@ public class OvervoltageHandler {
     /**
      * Check if a block is a tiered energy block and categorize it
      * as a source or consumer. Uses HashSet for O(1) duplicate checking.
+     *
+     * NOTE: Transformers (IVoltageTransformer) are EXCLUDED from this categorization
+     * because they bridge different voltage networks. Their whole purpose is to
+     * connect incompatible voltage tiers safely.
      */
     private static void categorizeTieredBlock(
             Level level,
@@ -210,6 +273,14 @@ public class OvervoltageHandler {
 
         BlockEntity be = level.getBlockEntity(pos);
         if (!(be instanceof IEnergyTier tieredBe)) return;
+
+        // Skip transformers - they bridge voltage networks and should not be
+        // treated as regular sources/consumers. They handle their own side-specific
+        // voltage checking.
+        if (be instanceof IVoltageTransformer) {
+            Config.debugLog("Skipping transformer at {} in overvoltage check (bridges voltage networks)", pos);
+            return;
+        }
 
         // Check energy capability to determine if source or consumer
         IEnergyStorage energyStorage = level.getCapability(

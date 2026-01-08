@@ -12,6 +12,8 @@ import com.nick.industrialcraft.client.screen.InductionFurnaceScreen;
 import com.nick.industrialcraft.client.screen.CanningMachineScreen;
 import com.nick.industrialcraft.client.screen.IronFurnaceScreen;
 import com.nick.industrialcraft.client.screen.BatBoxScreen;
+import com.nick.industrialcraft.client.screen.MFEScreen;
+import com.nick.industrialcraft.client.screen.MFSUScreen;
 import com.nick.industrialcraft.registry.ModMenus;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -52,6 +54,8 @@ public final class IndustrialCraftClient {
         event.register(ModMenus.CANNING_MACHINE.get(), CanningMachineScreen::new);
         event.register(ModMenus.IRON_FURNACE.get(), IronFurnaceScreen::new);
         event.register(ModMenus.BATBOX.get(), BatBoxScreen::new);
+        event.register(ModMenus.MFE.get(), MFEScreen::new);
+        event.register(ModMenus.MFSU.get(), MFSUScreen::new);
     }
 
     @SubscribeEvent

@@ -25,6 +25,8 @@ import com.nick.industrialcraft.IndustrialCraft;
 import com.nick.industrialcraft.registry.ModBlockEntity;
 import com.nick.industrialcraft.registry.ModDataComponents;
 import com.nick.industrialcraft.registry.ModItems;
+import com.nick.industrialcraft.registry.ModSounds;
+import net.minecraft.sounds.SoundSource;
 import com.nick.industrialcraft.api.energy.EnergyTier;
 import com.nick.industrialcraft.api.energy.IEnergyTier;
 import com.nick.industrialcraft.api.wrench.IWrenchable;
@@ -108,6 +110,9 @@ public class InductionFurnaceBlockEntity extends BlockEntity implements MenuProv
     private static final int BASE_EU_PER_ITEM = 3;        // 3 EU/t for 1 item (vs Electric Furnace's 4 EU/t)
     private static final int MAX_ENERGY = 256;            // Small buffer (2 ticks at max input)
     private static final int MAX_INPUT = 128;             // Max input per packet (MV tier)
+    private static final int SOUND_INTERVAL = 25;
+
+    private int soundTimer = 0;
 
     // NeoForge Energy Capability
     private final IEnergyStorage energyStorage = new IEnergyStorage() {
@@ -277,6 +282,13 @@ public class InductionFurnaceBlockEntity extends BlockEntity implements MenuProv
             be.powered = true;
             needsUpdate = true;
 
+            // Play operation sound periodically
+            be.soundTimer++;
+            if (be.soundTimer >= SOUND_INTERVAL) {
+                level.playSound(null, pos, ModSounds.INDUCTION_FURNACE.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
+                be.soundTimer = 0;
+            }
+
             // Check if operation is complete
             if (be.progress >= MAX_PROGRESS) {
                 // Smelt both slots if possible
@@ -295,6 +307,7 @@ public class InductionFurnaceBlockEntity extends BlockEntity implements MenuProv
             }
         } else {
             be.powered = false;
+            be.soundTimer = 0;
             // No energy = no progress, but don't reset progress (pause, don't lose work)
         }
 
@@ -302,6 +315,7 @@ public class InductionFurnaceBlockEntity extends BlockEntity implements MenuProv
         if (!canOperate) {
             be.progress = 0;
             be.powered = false;
+            be.soundTimer = 0;
         }
 
         // Update energy tracking for GUI

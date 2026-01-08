@@ -25,6 +25,7 @@ import com.nick.industrialcraft.registry.ModItems;
 import com.nick.industrialcraft.api.energy.EnergyTier;
 import com.nick.industrialcraft.api.energy.IElectricItem;
 import com.nick.industrialcraft.api.energy.IEnergyTier;
+import com.nick.industrialcraft.api.energy.IVoltageTransformer;
 import com.nick.industrialcraft.api.energy.EnergyNetworkManager;
 import com.nick.industrialcraft.api.energy.EnergyNetworkManager.MachineConnection;
 import com.nick.industrialcraft.api.wrench.IWrenchable;
@@ -270,6 +271,31 @@ public class BatBoxBlockEntity extends BlockEntity implements MenuProvider, IEne
             level, pos, outputFace
         );
 
+        // Also check for direct neighbor in case the network scan misses it
+        BlockPos directNeighbor = pos.relative(outputFace);
+        BlockEntity directBe = level.getBlockEntity(directNeighbor);
+        if (directBe != null && !(directBe instanceof com.nick.industrialcraft.content.block.cable.CableBlockEntity)) {
+            Direction accessSide = outputFace.getOpposite();
+            IEnergyStorage directStorage = level.getCapability(
+                net.neoforged.neoforge.capabilities.Capabilities.EnergyStorage.BLOCK,
+                directNeighbor,
+                accessSide
+            );
+            if (directStorage != null && directStorage.canReceive()) {
+                boolean alreadyInList = false;
+                for (MachineConnection mc : machines) {
+                    if (mc.pos().equals(directNeighbor)) {
+                        alreadyInList = true;
+                        break;
+                    }
+                }
+                if (!alreadyInList) {
+                    machines = new ArrayList<>(machines);
+                    machines.add(new MachineConnection(directNeighbor, directStorage, directBe, accessSide));
+                }
+            }
+        }
+
         if (machines.isEmpty() || energyStored <= 0) return false;
 
         // Filter to only machines that actually want energy
@@ -295,7 +321,15 @@ public class BatBoxBlockEntity extends BlockEntity implements MenuProvider, IEne
 
         for (MachineConnection machine : needyMachines) {
             // Check tier compatibility before transferring
-            if (machine.blockEntity() instanceof IEnergyTier tieredMachine) {
+            // For transformers, use side-specific check; for regular machines, use global check
+            if (machine.blockEntity() instanceof IVoltageTransformer transformer) {
+                // Transformer - check the specific side we're connecting to
+                if (!transformer.canSideReceive(machine.accessSide(), packetSize)) {
+                    // This side of the transformer can't handle this voltage - EXPLODE!
+                    explodeMachine(level, machine.pos());
+                    continue;
+                }
+            } else if (machine.blockEntity() instanceof IEnergyTier tieredMachine) {
                 if (!tieredMachine.canSafelyReceive(packetSize)) {
                     // Machine can't handle this voltage - EXPLODE!
                     explodeMachine(level, machine.pos());

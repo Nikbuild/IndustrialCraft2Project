@@ -21,6 +21,9 @@ import com.nick.industrialcraft.content.block.machine.RecyclerBlock;
 import com.nick.industrialcraft.content.block.machine.InductionFurnaceBlock;
 import com.nick.industrialcraft.content.block.machine.CanningMachineBlock;
 import com.nick.industrialcraft.content.block.storage.BatBoxBlock;
+import com.nick.industrialcraft.content.block.storage.MFEBlock;
+import com.nick.industrialcraft.content.block.storage.MFSUBlock;
+import com.nick.industrialcraft.content.block.transformer.LVTransformerBlock;
 import com.nick.industrialcraft.content.block.tree.ResinFilledRubberWoodBlock;
 import com.nick.industrialcraft.content.block.tree.RubberLeavesBlock;
 import com.nick.industrialcraft.content.block.tree.RubberSaplingBlock;
@@ -738,6 +741,40 @@ public final class ModBlocks {
             )
     );
 
+    public static final DeferredBlock<Block> MFE = BLOCKS.register(
+            "mfe",
+            () -> new MFEBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.METAL)
+                            .strength(5.0f)
+                            .requiresCorrectToolForDrops()
+                            .setId(ResourceKey.create(
+                                    Registries.BLOCK,
+                                    ResourceLocation.fromNamespaceAndPath(
+                                            IndustrialCraft.MODID,
+                                            "mfe"
+                                    )
+                            ))
+            )
+    );
+
+    public static final DeferredBlock<Block> MFSU = BLOCKS.register(
+            "mfsu",
+            () -> new MFSUBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.METAL)
+                            .strength(5.0f)
+                            .requiresCorrectToolForDrops()
+                            .setId(ResourceKey.create(
+                                    Registries.BLOCK,
+                                    ResourceLocation.fromNamespaceAndPath(
+                                            IndustrialCraft.MODID,
+                                            "mfsu"
+                                    )
+                            ))
+            )
+    );
+
     public static final DeferredBlock<Block> CANNING_MACHINE = BLOCKS.register(
             "canning_machine",
             () -> new CanningMachineBlock(
@@ -750,6 +787,57 @@ public final class ModBlocks {
                                     ResourceLocation.fromNamespaceAndPath(
                                             IndustrialCraft.MODID,
                                             "canning_machine"
+                                    )
+                            ))
+            )
+    );
+
+    public static final DeferredBlock<Block> LV_TRANSFORMER = BLOCKS.register(
+            "lv_transformer",
+            () -> new LVTransformerBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.METAL)
+                            .strength(5.0f)
+                            .requiresCorrectToolForDrops()
+                            .setId(ResourceKey.create(
+                                    Registries.BLOCK,
+                                    ResourceLocation.fromNamespaceAndPath(
+                                            IndustrialCraft.MODID,
+                                            "lv_transformer"
+                                    )
+                            ))
+            )
+    );
+
+    public static final DeferredBlock<Block> MV_TRANSFORMER = BLOCKS.register(
+            "mv_transformer",
+            () -> new com.nick.industrialcraft.content.block.transformer.MVTransformerBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.METAL)
+                            .strength(5.0f)
+                            .requiresCorrectToolForDrops()
+                            .setId(ResourceKey.create(
+                                    Registries.BLOCK,
+                                    ResourceLocation.fromNamespaceAndPath(
+                                            IndustrialCraft.MODID,
+                                            "mv_transformer"
+                                    )
+                            ))
+            )
+    );
+
+    public static final DeferredBlock<Block> HV_TRANSFORMER = BLOCKS.register(
+            "hv_transformer",
+            () -> new com.nick.industrialcraft.content.block.transformer.HVTransformerBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.METAL)
+                            .strength(5.0f)
+                            .requiresCorrectToolForDrops()
+                            .setId(ResourceKey.create(
+                                    Registries.BLOCK,
+                                    ResourceLocation.fromNamespaceAndPath(
+                                            IndustrialCraft.MODID,
+                                            "hv_transformer"
                                     )
                             ))
             )

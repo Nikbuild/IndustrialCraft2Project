@@ -22,6 +22,8 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import com.nick.industrialcraft.registry.ModBlockEntity;
 import com.nick.industrialcraft.registry.ModItems;
 import com.nick.industrialcraft.registry.ModDataComponents;
+import com.nick.industrialcraft.registry.ModSounds;
+import net.minecraft.sounds.SoundSource;
 import com.nick.industrialcraft.api.energy.EnergyTier;
 import com.nick.industrialcraft.api.energy.IEnergyTier;
 import com.nick.industrialcraft.api.wrench.IWrenchable;
@@ -141,6 +143,9 @@ public class CompressorBlockEntity extends BlockEntity implements MenuProvider, 
     private static final int MAX_ENERGY = 832;
     private static final int ENERGY_PER_OPERATION = 800;
     private static final int MAX_INPUT = 32;
+    private static final int SOUND_INTERVAL = 25;
+
+    private int soundTimer = 0;
 
     private final IEnergyStorage energyStorage = new IEnergyStorage() {
         @Override
@@ -331,6 +336,13 @@ public class CompressorBlockEntity extends BlockEntity implements MenuProvider, 
                 be.powered = true;
                 needsUpdate = true;
 
+                // Play operation sound periodically
+                be.soundTimer++;
+                if (be.soundTimer >= SOUND_INTERVAL) {
+                    level.playSound(null, pos, ModSounds.COMPRESSOR.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
+                    be.soundTimer = 0;
+                }
+
                 // Complete the operation
                 if (be.progress >= MAX_PROGRESS) {
                     be.compressItem(input);
@@ -340,10 +352,12 @@ public class CompressorBlockEntity extends BlockEntity implements MenuProvider, 
                 }
             } else {
                 be.powered = false;
+                be.soundTimer = 0;
             }
         } else {
             be.progress = 0;
             be.powered = false;
+            be.soundTimer = 0;
         }
 
         // Copy accumulated energy to last tick for GUI display

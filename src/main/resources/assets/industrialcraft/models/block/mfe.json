@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "industrialcraft:block/mfe_sides",
+    "down": "industrialcraft:block/mfe_bottom",
+    "up": "industrialcraft:block/mfe_top",
+    "north": "industrialcraft:block/mfe_front",
+    "south": "industrialcraft:block/mfe_sides",
+    "west": "industrialcraft:block/mfe_sides",
+    "east": "industrialcraft:block/mfe_sides"
+  }
+}

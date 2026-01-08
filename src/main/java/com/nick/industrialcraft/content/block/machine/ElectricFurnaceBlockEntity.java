@@ -22,6 +22,8 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import com.nick.industrialcraft.registry.ModBlockEntity;
 import com.nick.industrialcraft.registry.ModDataComponents;
 import com.nick.industrialcraft.registry.ModItems;
+import com.nick.industrialcraft.registry.ModSounds;
+import net.minecraft.sounds.SoundSource;
 import com.nick.industrialcraft.api.energy.EnergyTier;
 import com.nick.industrialcraft.api.energy.IEnergyTier;
 import com.nick.industrialcraft.api.wrench.IWrenchable;
@@ -74,6 +76,9 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
     private static final int MAX_ENERGY = 416;          // Energy storage: 416 EU (400 + 16 buffer)
     private static final int ENERGY_PER_OPERATION = 400; // Total EU per recipe: 400 EU (10 smelts per coal)
     private static final int MAX_INPUT = 10;            // Max input: 10 EU/t (matches generator output)
+    private static final int SOUND_INTERVAL = 25;
+
+    private int soundTimer = 0;
 
     // NeoForge Energy Capability (for compatibility with other mods)
     private final IEnergyStorage energyStorage = new IEnergyStorage() {
@@ -234,6 +239,13 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
                 be.powered = true;
                 needsUpdate = true;
 
+                // Play operation sound periodically
+                be.soundTimer++;
+                if (be.soundTimer >= SOUND_INTERVAL) {
+                    level.playSound(null, pos, ModSounds.ELECTRIC_FURNACE.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
+                    be.soundTimer = 0;
+                }
+
                 // Complete the operation when progress reaches max
                 if (be.progress >= MAX_PROGRESS) {
                     be.smeltItem(level, input);
@@ -244,11 +256,13 @@ public class ElectricFurnaceBlockEntity extends BlockEntity implements MenuProvi
             } else {
                 // No energy flowing - no progress
                 be.powered = false;
+                be.soundTimer = 0;
             }
         } else {
             // No valid input or can't smelt, reset progress
             be.progress = 0;
             be.powered = false;
+            be.soundTimer = 0;
         }
 
         // Copy accumulated energy to last tick for GUI display (do this at END of tick)

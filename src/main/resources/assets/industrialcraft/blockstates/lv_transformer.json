@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=north": { "model": "industrialcraft:block/lv_transformer" },
+    "facing=south": { "model": "industrialcraft:block/lv_transformer", "y": 180 },
+    "facing=west": { "model": "industrialcraft:block/lv_transformer", "y": 270 },
+    "facing=east": { "model": "industrialcraft:block/lv_transformer", "y": 90 },
+    "facing=up": { "model": "industrialcraft:block/lv_transformer", "x": 270 },
+    "facing=down": { "model": "industrialcraft:block/lv_transformer", "x": 90 }
+  }
+}

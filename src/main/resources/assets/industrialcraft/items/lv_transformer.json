@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "industrialcraft:block/lv_transformer"
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "machines.macerator": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "industrialcraft:machines/macerator",
+        "stream": false
+      }
+    ]
+  },
+  "machines.compressor": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "industrialcraft:machines/compressor",
+        "stream": false
+      }
+    ]
+  },
+  "machines.extractor": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "industrialcraft:machines/extractor",
+        "stream": false
+      }
+    ]
+  },
+  "machines.recycler": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "industrialcraft:machines/recycler",
+        "stream": false
+      }
+    ]
+  },
+  "machines.iron_furnace": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "industrialcraft:machines/iron_furnace",
+        "stream": false
+      }
+    ]
+  },
+  "machines.electric_furnace": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "industrialcraft:machines/electric_furnace",
+        "stream": false
+      }
+    ]
+  },
+  "machines.induction_furnace": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "industrialcraft:machines/induction_furnace",
+        "stream": false
+      }
+    ]
+  },
+  "machines.interrupt": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "industrialcraft:machines/interrupt",
+        "stream": false
+      }
+    ]
+  },
+  "generators.generator": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "industrialcraft:generators/generator",
+        "stream": false
+      }
+    ]
+  },
+  "generators.geothermal": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "industrialcraft:generators/geothermal",
+        "stream": false
+      }
+    ]
+  },
+  "tools.wrench": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "industrialcraft:tools/wrench",
+        "stream": false
+      }
+    ]
+  }
+}

@@ -362,8 +362,8 @@ public class Config {
     public static final ModConfigSpec.BooleanValue DEBUG_LOGGING = BUILDER
             .comment("Enable detailed debug logging for energy networks",
                      "Useful for troubleshooting but may spam logs",
-                     "Default: false")
-            .define("debug_logging", false);
+                     "Default: true (temporarily for debugging)")
+            .define("debug_logging", true);
 
     public static final ModConfigSpec.BooleanValue SHOW_EU_IN_TOOLTIPS = BUILDER
             .comment("Show EU values in item tooltips",

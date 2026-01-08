@@ -30,8 +30,18 @@ import java.util.*;
 public class EnergyNetworkManager {
 
     // Per-level cache of network topologies
-    // Key: Source BlockPos, Value: Cached network result
-    private static final Map<Level, Map<BlockPos, CachedNetwork>> networkCache = new WeakHashMap<>();
+    // Key: CacheKey (sourcePos + directions), Value: Cached network result
+    private static final Map<Level, Map<CacheKey, CachedNetwork>> networkCache = new WeakHashMap<>();
+
+    /**
+     * Cache key that includes both position AND directions.
+     * Different direction scans from the same position must be cached separately!
+     */
+    private record CacheKey(BlockPos pos, Set<Direction> directions) {
+        static CacheKey of(BlockPos pos, Direction... dirs) {
+            return new CacheKey(pos, Set.of(dirs));
+        }
+    }
 
     /**
      * Represents a cached network scan result.
@@ -56,12 +66,19 @@ public class EnergyNetworkManager {
      * @param pos The position of the machine
      * @param storage The energy storage capability of the machine
      * @param blockEntity The block entity (may be null if removed)
+     * @param accessSide The side of the machine that the cable connects to (for side-specific storage)
      */
     public record MachineConnection(
             BlockPos pos,
             IEnergyStorage storage,
-            BlockEntity blockEntity
-    ) {}
+            BlockEntity blockEntity,
+            Direction accessSide
+    ) {
+        // Backwards compatibility constructor
+        public MachineConnection(BlockPos pos, IEnergyStorage storage, BlockEntity blockEntity) {
+            this(pos, storage, blockEntity, null);
+        }
+    }
 
     /**
      * Get connected machines for a generator/storage block at the given position.
@@ -77,39 +94,52 @@ public class EnergyNetworkManager {
             return Collections.emptyList();
         }
 
+        System.out.println("[BFS DEBUG] getConnectedMachines called from " + sourcePos + " dirs=" + java.util.Arrays.toString(directions));
+
         // Get or create level cache
-        Map<BlockPos, CachedNetwork> levelCache = networkCache.computeIfAbsent(level, k -> new HashMap<>());
+        Map<CacheKey, CachedNetwork> levelCache = networkCache.computeIfAbsent(level, k -> new HashMap<>());
+
+        // Cache key includes BOTH position AND directions - different direction scans are different!
+        CacheKey cacheKey = CacheKey.of(sourcePos, directions);
 
         // Check if we have a valid cached result
         long currentTime = level.getGameTime();
-        CachedNetwork cached = levelCache.get(sourcePos);
+        CachedNetwork cached = levelCache.get(cacheKey);
 
         if (cached != null && !cached.isExpired(currentTime)) {
+            System.out.println("[BFS DEBUG]   Using cached result with " + cached.machines().size() + " machines");
             // Verify machines still exist and have valid storage
             List<MachineConnection> validMachines = new ArrayList<>();
             for (MachineConnection machine : cached.machines()) {
                 IEnergyStorage storage = level.getCapability(
                     Capabilities.EnergyStorage.BLOCK,
                     machine.pos(),
-                    null
+                    machine.accessSide()  // Use the stored access side!
                 );
                 if (storage != null && storage.canReceive()) {
                     BlockEntity be = level.getBlockEntity(machine.pos());
-                    validMachines.add(new MachineConnection(machine.pos(), storage, be));
+                    validMachines.add(new MachineConnection(machine.pos(), storage, be, machine.accessSide()));
                 }
             }
+            System.out.println("[BFS DEBUG]   Validated " + validMachines.size() + " machines from cache");
             return validMachines;
         }
 
+        System.out.println("[BFS DEBUG]   Cache miss/expired, performing full scan");
         // Cache miss or expired - perform full scan
         CachedNetwork newCache = scanNetwork(level, sourcePos, currentTime, directions);
-        levelCache.put(sourcePos, newCache);
+        levelCache.put(cacheKey, newCache);
 
-        Config.debugLog("Network scan at {}: found {} machines via {} cables",
-            sourcePos, newCache.machines().size(), newCache.cablePositions().size());
+        System.out.println("[BFS DEBUG]   Scan result: " + newCache.machines().size() + " machines via " + newCache.cablePositions().size() + " cables");
 
         return new ArrayList<>(newCache.machines());
     }
+
+    /**
+     * Entry in the BFS queue that tracks both position and the direction we came from.
+     * This allows us to know which side of a machine to access for side-specific storage.
+     */
+    private record QueueEntry(BlockPos pos, Direction fromDirection) {}
 
     /**
      * Scan the network using iterative BFS (breadth-first search).
@@ -120,53 +150,85 @@ public class EnergyNetworkManager {
         Set<BlockPos> visitedMachines = new HashSet<>();
         List<MachineConnection> machines = new ArrayList<>();
 
-        // BFS queue for iterative traversal
-        Deque<BlockPos> queue = new ArrayDeque<>();
+        // BFS queue for iterative traversal - now tracks direction we came from
+        Deque<QueueEntry> queue = new ArrayDeque<>();
+
+        System.out.println("[BFS DEBUG] scanNetwork starting from " + sourcePos + " in directions " + java.util.Arrays.toString(directions));
 
         // Seed the queue with initial positions
         for (Direction dir : directions) {
-            queue.add(sourcePos.relative(dir));
+            // fromDirection is the direction FROM the neighbor's perspective (opposite of our scan direction)
+            BlockPos startPos = sourcePos.relative(dir);
+            System.out.println("[BFS DEBUG]   Seeding queue with " + startPos + " (dir=" + dir + ", accessSide=" + dir.getOpposite() + ")");
+            queue.add(new QueueEntry(startPos, dir.getOpposite()));
         }
 
         int blocksScanned = 0;
         int maxNetworkSize = Config.MAX_NETWORK_SIZE.get();
 
         while (!queue.isEmpty() && blocksScanned < maxNetworkSize) {
-            BlockPos pos = queue.poll();
+            QueueEntry entry = queue.poll();
+            BlockPos pos = entry.pos();
+            Direction accessSide = entry.fromDirection();  // The side we're accessing this block from
             blocksScanned++;
+
+            System.out.println("[BFS DEBUG] Processing " + pos + " (accessSide=" + accessSide + ")");
 
             // Skip the source position itself
             if (pos.equals(sourcePos)) {
+                System.out.println("[BFS DEBUG]   Skipping (is source position)");
                 continue;
             }
 
             BlockState state = level.getBlockState(pos);
+            System.out.println("[BFS DEBUG]   BlockState: " + state.getBlock().getClass().getSimpleName() + " (" + state.getBlock() + ")");
 
             // If this is a cable, explore its connections
             if (state.getBlock() instanceof BaseCableBlock) {
+                System.out.println("[BFS DEBUG]   Is a cable!");
                 // Skip if already visited
                 if (visitedCables.contains(pos)) {
                     continue;
                 }
                 visitedCables.add(pos);
+                Config.debugLog("  BFS found cable at {}", pos);
 
                 // Get the cable block entity to check connections
                 BlockEntity be = level.getBlockEntity(pos);
-                if (!(be instanceof CableBlockEntity cable)) {
-                    continue;
-                }
+                if (be instanceof CableBlockEntity cable) {
+                    // Add all connected neighbors to the queue
+                    for (Direction dir : Direction.values()) {
+                        if (!cable.isConnectedInDirection(state, dir)) {
+                            continue;
+                        }
 
-                // Add all connected neighbors to the queue
-                for (Direction dir : Direction.values()) {
-                    if (!cable.isConnectedInDirection(state, dir)) {
-                        continue;
+                        BlockPos neighborPos = pos.relative(dir);
+                        Config.debugLog("    Cable at {} connected to {} in direction {}", pos, neighborPos, dir);
+
+                        // Only add if not already visited
+                        if (!visitedCables.contains(neighborPos) && !visitedMachines.contains(neighborPos)) {
+                            // The neighbor's access side is opposite of the direction we're going
+                            queue.add(new QueueEntry(neighborPos, dir.getOpposite()));
+                        }
                     }
+                } else {
+                    // Block entity missing or wrong type - use blockstate properties directly as fallback
+                    Config.debugLog("  WARNING: Cable at {} has no/wrong block entity, using blockstate", pos);
+                    for (Direction dir : Direction.values()) {
+                        boolean connected = switch (dir) {
+                            case NORTH -> state.getValue(BaseCableBlock.NORTH);
+                            case SOUTH -> state.getValue(BaseCableBlock.SOUTH);
+                            case EAST -> state.getValue(BaseCableBlock.EAST);
+                            case WEST -> state.getValue(BaseCableBlock.WEST);
+                            case UP -> state.getValue(BaseCableBlock.UP);
+                            case DOWN -> state.getValue(BaseCableBlock.DOWN);
+                        };
+                        if (!connected) continue;
 
-                    BlockPos neighborPos = pos.relative(dir);
-
-                    // Only add if not already visited
-                    if (!visitedCables.contains(neighborPos) && !visitedMachines.contains(neighborPos)) {
-                        queue.add(neighborPos);
+                        BlockPos neighborPos = pos.relative(dir);
+                        if (!visitedCables.contains(neighborPos) && !visitedMachines.contains(neighborPos)) {
+                            queue.add(new QueueEntry(neighborPos, dir.getOpposite()));
+                        }
                     }
                 }
             }
@@ -178,27 +240,35 @@ public class EnergyNetworkManager {
                 }
                 visitedMachines.add(pos);
 
-                // Try to get energy capability
+                // Try to get energy capability WITH THE CORRECT SIDE
+                // accessSide is the side of the machine that the cable is connected to
                 BlockEntity neighborBe = level.getBlockEntity(pos);
                 IEnergyStorage neighborEnergy = level.getCapability(
                     Capabilities.EnergyStorage.BLOCK,
                     pos,
-                    null
+                    accessSide  // Pass the correct side for side-specific storage!
                 );
 
                 if (neighborEnergy != null && neighborEnergy.canReceive()) {
-                    machines.add(new MachineConnection(pos, neighborEnergy, neighborBe));
+                    Config.debugLog("  BFS found MACHINE at {} (type={}, accessSide={}, canReceive=true)",
+                        pos, neighborBe != null ? neighborBe.getClass().getSimpleName() : "null", accessSide);
+                    machines.add(new MachineConnection(pos, neighborEnergy, neighborBe, accessSide));
+                } else {
+                    Config.debugLog("  BFS found non-energy block at {} (type={}, accessSide={})",
+                        pos, state.getBlock().getClass().getSimpleName(), accessSide);
                 }
             }
         }
 
         // Warn if network was truncated due to size limit
         if (!queue.isEmpty()) {
-            Config.debugLog("WARNING: Network scan at {} was truncated at {} blocks (limit: {}). " +
-                "Consider increasing max_network_size in config if this network is intentionally large.",
-                sourcePos, blocksScanned, maxNetworkSize);
+            System.out.println("[BFS DEBUG] WARNING: Network scan at " + sourcePos + " was truncated at " + blocksScanned + " blocks (limit: " + maxNetworkSize + ")");
         }
 
+        System.out.println("[BFS DEBUG] Scan complete. Found " + machines.size() + " machines, " + visitedCables.size() + " cables");
+        for (MachineConnection mc : machines) {
+            System.out.println("[BFS DEBUG]   Machine: " + mc.pos() + " (" + (mc.blockEntity() != null ? mc.blockEntity().getClass().getSimpleName() : "null") + ")");
+        }
         return new CachedNetwork(machines, visitedCables, currentTime);
     }
 
@@ -214,41 +284,51 @@ public class EnergyNetworkManager {
             return;
         }
 
-        Map<BlockPos, CachedNetwork> levelCache = networkCache.get(level);
+        Map<CacheKey, CachedNetwork> levelCache = networkCache.get(level);
         if (levelCache == null) {
             return;
         }
 
         // Invalidate any cache that contains this position
         // This is more thorough than just removing pos from cache
-        List<BlockPos> toRemove = new ArrayList<>();
+        List<CacheKey> toRemove = new ArrayList<>();
 
-        for (Map.Entry<BlockPos, CachedNetwork> entry : levelCache.entrySet()) {
+        for (Map.Entry<CacheKey, CachedNetwork> entry : levelCache.entrySet()) {
             CachedNetwork cached = entry.getValue();
+            CacheKey key = entry.getKey();
 
-            // If this position is in the cable network or is a machine in this network, invalidate
-            if (cached.cablePositions().contains(pos) || entry.getKey().equals(pos)) {
-                toRemove.add(entry.getKey());
+            // If this position is in the cable network or is the source position, invalidate
+            if (cached.cablePositions().contains(pos) || key.pos().equals(pos)) {
+                toRemove.add(key);
                 continue;
             }
 
             // Also check if pos is one of the machines
             for (MachineConnection machine : cached.machines()) {
                 if (machine.pos().equals(pos)) {
-                    toRemove.add(entry.getKey());
+                    toRemove.add(key);
                     break;
                 }
             }
         }
 
-        for (BlockPos key : toRemove) {
+        for (CacheKey key : toRemove) {
             levelCache.remove(key);
         }
 
         // Also invalidate caches of adjacent positions (they might now connect to pos)
-        for (Direction dir : Direction.values()) {
-            BlockPos neighbor = pos.relative(dir);
-            levelCache.remove(neighbor);
+        // We need to remove ALL cache entries where the source pos is adjacent
+        List<CacheKey> adjacentToRemove = new ArrayList<>();
+        for (CacheKey key : levelCache.keySet()) {
+            for (Direction dir : Direction.values()) {
+                if (key.pos().equals(pos.relative(dir))) {
+                    adjacentToRemove.add(key);
+                    break;
+                }
+            }
+        }
+        for (CacheKey key : adjacentToRemove) {
+            levelCache.remove(key);
         }
 
         if (!toRemove.isEmpty()) {
@@ -269,23 +349,23 @@ public class EnergyNetworkManager {
             return;
         }
 
-        Map<BlockPos, CachedNetwork> levelCache = networkCache.get(level);
+        Map<CacheKey, CachedNetwork> levelCache = networkCache.get(level);
         if (levelCache == null) {
             return;
         }
 
         // Just clear all caches that are within range
         // This is a simple but effective approach
-        List<BlockPos> toRemove = new ArrayList<>();
+        List<CacheKey> toRemove = new ArrayList<>();
         int radiusSq = radius * radius;
 
-        for (BlockPos key : levelCache.keySet()) {
-            if (key.distSqr(pos) <= radiusSq) {
+        for (CacheKey key : levelCache.keySet()) {
+            if (key.pos().distSqr(pos) <= radiusSq) {
                 toRemove.add(key);
             }
         }
 
-        for (BlockPos key : toRemove) {
+        for (CacheKey key : toRemove) {
             levelCache.remove(key);
         }
     }
@@ -308,7 +388,7 @@ public class EnergyNetworkManager {
      * Get cache statistics for debugging.
      */
     public static String getCacheStats(Level level) {
-        Map<BlockPos, CachedNetwork> levelCache = networkCache.get(level);
+        Map<CacheKey, CachedNetwork> levelCache = networkCache.get(level);
         if (levelCache == null) {
             return "No cache for this level";
         }

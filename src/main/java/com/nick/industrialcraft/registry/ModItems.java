@@ -1582,6 +1582,21 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> BATBOX_ITEM =
             ITEMS.registerSimpleBlockItem("batbox", ModBlocks.BATBOX);
 
+    public static final DeferredItem<BlockItem> MFE_ITEM =
+            ITEMS.registerSimpleBlockItem("mfe", ModBlocks.MFE);
+
+    public static final DeferredItem<BlockItem> MFSU_ITEM =
+            ITEMS.registerSimpleBlockItem("mfsu", ModBlocks.MFSU);
+
+    public static final DeferredItem<BlockItem> LV_TRANSFORMER_ITEM =
+            ITEMS.registerSimpleBlockItem("lv_transformer", ModBlocks.LV_TRANSFORMER);
+
+    public static final DeferredItem<BlockItem> MV_TRANSFORMER_ITEM =
+            ITEMS.registerSimpleBlockItem("mv_transformer", ModBlocks.MV_TRANSFORMER);
+
+    public static final DeferredItem<BlockItem> HV_TRANSFORMER_ITEM =
+            ITEMS.registerSimpleBlockItem("hv_transformer", ModBlocks.HV_TRANSFORMER);
+
     public static final DeferredItem<BlockItem> CANNING_MACHINE_ITEM =
             ITEMS.registerSimpleBlockItem("canning_machine", ModBlocks.CANNING_MACHINE);
 

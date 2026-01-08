@@ -20,9 +20,12 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import com.nick.industrialcraft.registry.ModBlockEntity;
 import com.nick.industrialcraft.registry.ModDataComponents;
 import com.nick.industrialcraft.registry.ModItems;
+import com.nick.industrialcraft.registry.ModSounds;
+import net.minecraft.sounds.SoundSource;
 import com.nick.industrialcraft.api.energy.EnergyTier;
 import com.nick.industrialcraft.api.energy.IElectricItem;
 import com.nick.industrialcraft.api.energy.IEnergyTier;
+import com.nick.industrialcraft.api.energy.IVoltageTransformer;
 import com.nick.industrialcraft.api.energy.EnergyNetworkManager;
 import com.nick.industrialcraft.api.energy.EnergyNetworkManager.MachineConnection;
 import com.nick.industrialcraft.api.wrench.IWrenchable;
@@ -65,6 +68,9 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider, I
     private static final int MAX_ENERGY = 4000;  // Generator stores 4000 EU max
     private static final int ENERGY_PER_TICK = 10;  // 10 EU/tick generation (400 ticks * 10 EU = 4000 EU per coal)
     private static final int MAX_OUTPUT_RATE = 10;  // Maximum output rate per tick for simultaneous distribution
+    private static final int SOUND_INTERVAL = 25;
+
+    private int soundTimer = 0;
 
     // NeoForge Energy Capability (for compatibility with other mods)
     private final IEnergyStorage energyStorage = new IEnergyStorage() {
@@ -188,6 +194,33 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider, I
             level, pos, Direction.values()
         );
 
+        // Also check for direct neighbors in case the network scan misses them
+        for (Direction dir : Direction.values()) {
+            BlockPos directNeighbor = pos.relative(dir);
+            BlockEntity directBe = level.getBlockEntity(directNeighbor);
+            if (directBe != null && !(directBe instanceof com.nick.industrialcraft.content.block.cable.CableBlockEntity)) {
+                Direction accessSide = dir.getOpposite();
+                IEnergyStorage directStorage = level.getCapability(
+                    net.neoforged.neoforge.capabilities.Capabilities.EnergyStorage.BLOCK,
+                    directNeighbor,
+                    accessSide
+                );
+                if (directStorage != null && directStorage.canReceive()) {
+                    boolean alreadyInList = false;
+                    for (MachineConnection mc : machines) {
+                        if (mc.pos().equals(directNeighbor)) {
+                            alreadyInList = true;
+                            break;
+                        }
+                    }
+                    if (!alreadyInList) {
+                        machines = new ArrayList<>(machines);
+                        machines.add(new MachineConnection(directNeighbor, directStorage, directBe, accessSide));
+                    }
+                }
+            }
+        }
+
         if (machines.isEmpty() || energy <= 0) return;
 
         // Filter to only machines that actually want energy
@@ -211,7 +244,15 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider, I
         // Transfer to each machine
         for (MachineConnection machine : needyMachines) {
             // Check tier compatibility before transferring
-            if (machine.blockEntity() instanceof IEnergyTier tieredMachine) {
+            // For transformers, use side-specific check; for regular machines, use global check
+            if (machine.blockEntity() instanceof IVoltageTransformer transformer) {
+                // Transformer - check the specific side we're connecting to
+                if (!transformer.canSideReceive(machine.accessSide(), packetSize)) {
+                    // This side of the transformer can't handle this voltage - EXPLODE!
+                    explodeMachine(level, machine.pos());
+                    continue;
+                }
+            } else if (machine.blockEntity() instanceof IEnergyTier tieredMachine) {
                 if (!tieredMachine.canSafelyReceive(packetSize)) {
                     // Machine can't handle this voltage - EXPLODE!
                     explodeMachine(level, machine.pos());
@@ -260,6 +301,13 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider, I
             be.burnTime--;
             be.powered = true;
 
+            // Play operation sound periodically
+            be.soundTimer++;
+            if (be.soundTimer >= SOUND_INTERVAL) {
+                level.playSound(null, pos, ModSounds.GENERATOR.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
+                be.soundTimer = 0;
+            }
+
             // Generate energy while burning (if not already full)
             if (be.energy < MAX_ENERGY) {
                 be.energy += ENERGY_PER_TICK;
@@ -271,6 +319,7 @@ public class GeneratorBlockEntity extends BlockEntity implements MenuProvider, I
             be.setChanged();
         } else {
             be.powered = false;
+            be.soundTimer = 0;
 
             // Only try to get fuel if storage is NOT full
             if (be.energy < MAX_ENERGY && !be.inventory.getStackInSlot(FUEL_SLOT).isEmpty()) {

@@ -20,6 +20,8 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import com.nick.industrialcraft.registry.ModBlockEntity;
 import com.nick.industrialcraft.registry.ModDataComponents;
 import com.nick.industrialcraft.registry.ModItems;
+import com.nick.industrialcraft.registry.ModSounds;
+import net.minecraft.sounds.SoundSource;
 import com.nick.industrialcraft.api.energy.EnergyTier;
 import com.nick.industrialcraft.api.energy.IEnergyTier;
 import com.nick.industrialcraft.api.wrench.IWrenchable;
@@ -75,6 +77,9 @@ public class RecyclerBlockEntity extends BlockEntity implements MenuProvider, IE
     private static final int MAX_ENERGY = 77;              // 45 + 32 buffer
     private static final int ENERGY_PER_OPERATION = 45;    // 1 EU/t * 45 ticks = 45 EU
     private static final int MAX_INPUT = 32;               // LV tier max input
+    private static final int SOUND_INTERVAL = 20;          // Recycler is faster, shorter interval
+
+    private int soundTimer = 0;
 
     // Processing state
     private float progress = 0.0f;
@@ -393,6 +398,13 @@ public class RecyclerBlockEntity extends BlockEntity implements MenuProvider, IE
                 be.powered = true;
                 needsUpdate = true;
 
+                // Play operation sound periodically
+                be.soundTimer++;
+                if (be.soundTimer >= SOUND_INTERVAL) {
+                    level.playSound(null, pos, ModSounds.RECYCLER.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
+                    be.soundTimer = 0;
+                }
+
                 // Complete the operation
                 if (be.progress >= MAX_PROGRESS) {
                     be.recycleItem(input);
@@ -402,10 +414,12 @@ public class RecyclerBlockEntity extends BlockEntity implements MenuProvider, IE
                 }
             } else {
                 be.powered = false;
+                be.soundTimer = 0;
             }
         } else {
             be.progress = 0;
             be.powered = false;
+            be.soundTimer = 0;
         }
 
         // Copy accumulated energy to last tick for GUI display

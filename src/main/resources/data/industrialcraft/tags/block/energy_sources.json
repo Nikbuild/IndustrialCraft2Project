@@ -2,6 +2,12 @@
   "replace": false,
   "values": [
     "industrialcraft:generator",
-    "industrialcraft:geothermal_generator"
+    "industrialcraft:geothermal_generator",
+    "industrialcraft:batbox",
+    "industrialcraft:mfe",
+    "industrialcraft:mfsu",
+    "industrialcraft:lv_transformer",
+    "industrialcraft:mv_transformer",
+    "industrialcraft:hv_transformer"
   ]
 }

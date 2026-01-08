@@ -8,6 +8,11 @@
     "industrialcraft:induction_furnace",
     "industrialcraft:recycler",
     "industrialcraft:canning_machine",
-    "industrialcraft:batbox"
+    "industrialcraft:batbox",
+    "industrialcraft:mfe",
+    "industrialcraft:mfsu",
+    "industrialcraft:lv_transformer",
+    "industrialcraft:mv_transformer",
+    "industrialcraft:hv_transformer"
   ]
 }

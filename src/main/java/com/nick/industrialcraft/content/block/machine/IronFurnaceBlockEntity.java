@@ -21,6 +21,8 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import com.nick.industrialcraft.api.wrench.IWrenchable;
 import com.nick.industrialcraft.registry.ModBlockEntity;
 import com.nick.industrialcraft.registry.ModItems;
+import com.nick.industrialcraft.registry.ModSounds;
+import net.minecraft.sounds.SoundSource;
 
 /**
  * Iron Furnace BlockEntity - Fuel-based furnace that smelts 20% faster than vanilla.
@@ -61,6 +63,10 @@ public class IronFurnaceBlockEntity extends BlockEntity implements MenuProvider,
     private int maxFuel = 0;    // Max fuel time for current fuel item (for GUI scaling)
     private int progress = 0;   // Current smelting progress (0 to OPERATION_LENGTH)
 
+    // Sound
+    private static final int SOUND_INTERVAL = 25;
+    private int soundTimer = 0;
+
     public IronFurnaceBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntity.IRON_FURNACE.get(), pos, state);
     }
@@ -93,6 +99,13 @@ public class IronFurnaceBlockEntity extends BlockEntity implements MenuProvider,
         if (be.isBurning() && be.canOperate()) {
             be.progress++;
 
+            // Play operation sound periodically
+            be.soundTimer++;
+            if (be.soundTimer >= SOUND_INTERVAL) {
+                level.playSound(null, pos, ModSounds.IRON_FURNACE.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
+                be.soundTimer = 0;
+            }
+
             if (be.progress >= OPERATION_LENGTH) {
                 be.progress = 0;
                 be.operate(level);
@@ -101,6 +114,7 @@ public class IronFurnaceBlockEntity extends BlockEntity implements MenuProvider,
         } else if (!be.canOperate()) {
             // Reset progress if we can't operate (no input or output full)
             be.progress = 0;
+            be.soundTimer = 0;
         }
 
         // Consume fuel each tick while burning

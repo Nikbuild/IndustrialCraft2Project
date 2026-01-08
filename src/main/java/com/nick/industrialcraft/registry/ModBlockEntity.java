@@ -12,6 +12,11 @@ import com.nick.industrialcraft.content.block.machine.InductionFurnaceBlockEntit
 import com.nick.industrialcraft.content.block.machine.CanningMachineBlockEntity;
 import com.nick.industrialcraft.content.block.machine.IronFurnaceBlockEntity;
 import com.nick.industrialcraft.content.block.storage.BatBoxBlockEntity;
+import com.nick.industrialcraft.content.block.storage.MFEBlockEntity;
+import com.nick.industrialcraft.content.block.storage.MFSUBlockEntity;
+import com.nick.industrialcraft.content.block.transformer.LVTransformerBlockEntity;
+import com.nick.industrialcraft.content.block.transformer.MVTransformerBlockEntity;
+import com.nick.industrialcraft.content.block.transformer.HVTransformerBlockEntity;
 import com.nick.industrialcraft.content.block.cable.CableBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -105,6 +110,22 @@ public final class ModBlockEntity {
                     ))
             );
 
+    // MFE Block Entity
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MFEBlockEntity>> MFE =
+            BLOCK_ENTITY_TYPES.register("mfe", () ->
+                    new BlockEntityType<>(MFEBlockEntity::new, Set.of(
+                            ModBlocks.MFE.get()
+                    ))
+            );
+
+    // MFSU Block Entity
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MFSUBlockEntity>> MFSU =
+            BLOCK_ENTITY_TYPES.register("mfsu", () ->
+                    new BlockEntityType<>(MFSUBlockEntity::new, Set.of(
+                            ModBlocks.MFSU.get()
+                    ))
+            );
+
     // Canning Machine Block Entity
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CanningMachineBlockEntity>> CANNING_MACHINE =
             BLOCK_ENTITY_TYPES.register("canning_machine", () ->
@@ -118,6 +139,30 @@ public final class ModBlockEntity {
             BLOCK_ENTITY_TYPES.register("iron_furnace", () ->
                     new BlockEntityType<>(IronFurnaceBlockEntity::new, Set.of(
                             ModBlocks.IRON_FURNACE.get()
+                    ))
+            );
+
+    // LV Transformer Block Entity
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LVTransformerBlockEntity>> LV_TRANSFORMER =
+            BLOCK_ENTITY_TYPES.register("lv_transformer", () ->
+                    new BlockEntityType<>(LVTransformerBlockEntity::new, Set.of(
+                            ModBlocks.LV_TRANSFORMER.get()
+                    ))
+            );
+
+    // MV Transformer Block Entity
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MVTransformerBlockEntity>> MV_TRANSFORMER =
+            BLOCK_ENTITY_TYPES.register("mv_transformer", () ->
+                    new BlockEntityType<>(MVTransformerBlockEntity::new, Set.of(
+                            ModBlocks.MV_TRANSFORMER.get()
+                    ))
+            );
+
+    // HV Transformer Block Entity
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HVTransformerBlockEntity>> HV_TRANSFORMER =
+            BLOCK_ENTITY_TYPES.register("hv_transformer", () ->
+                    new BlockEntityType<>(HVTransformerBlockEntity::new, Set.of(
+                            ModBlocks.HV_TRANSFORMER.get()
                     ))
             );
 

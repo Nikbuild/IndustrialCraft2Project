@@ -7,6 +7,7 @@ import com.nick.industrialcraft.registry.ModDataComponents;
 import com.nick.industrialcraft.registry.ModFeatures;
 import com.nick.industrialcraft.registry.ModItems;
 import com.nick.industrialcraft.registry.ModMenus;
+import com.nick.industrialcraft.registry.ModSounds;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -286,6 +287,11 @@ public class IndustrialCraft {
                                 out.accept(ModItems.INDUCTION_FURNACE_ITEM.get());
                                 out.accept(ModItems.CANNING_MACHINE_ITEM.get());
                                 out.accept(ModItems.BATBOX_ITEM.get());
+                                out.accept(ModItems.MFE_ITEM.get());
+                                out.accept(ModItems.MFSU_ITEM.get());
+                                out.accept(ModItems.LV_TRANSFORMER_ITEM.get());
+                                out.accept(ModItems.MV_TRANSFORMER_ITEM.get());
+                                out.accept(ModItems.HV_TRANSFORMER_ITEM.get());
                                 out.accept(ModItems.REACTOR_CHAMBER_ITEM.get());
                                 out.accept(ModItems.ELECTRIC_BLOCK_ITEM.get());
                                 out.accept(ModItems.MACHINE_ITEM.get());
@@ -326,6 +332,7 @@ public class IndustrialCraft {
         ModMenus.MENUS.register(modEventBus);
         ModDataComponents.DATA_COMPONENTS.register(modEventBus);
         ModFeatures.FEATURES.register(modEventBus);
+        ModSounds.SOUNDS.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
 
         NeoForge.EVENT_BUS.addListener(this::onServerStarting);
@@ -347,6 +354,11 @@ public class IndustrialCraft {
         com.nick.industrialcraft.content.block.machine.InductionFurnaceBlock.registerCapabilities(event);
         com.nick.industrialcraft.content.block.machine.CanningMachineBlock.registerCapabilities(event);
         com.nick.industrialcraft.content.block.storage.BatBoxBlock.registerCapabilities(event);
+        com.nick.industrialcraft.content.block.storage.MFEBlock.registerCapabilities(event);
+        com.nick.industrialcraft.content.block.storage.MFSUBlock.registerCapabilities(event);
+        com.nick.industrialcraft.content.block.transformer.LVTransformerBlock.registerCapabilities(event);
+        com.nick.industrialcraft.content.block.transformer.MVTransformerBlock.registerCapabilities(event);
+        com.nick.industrialcraft.content.block.transformer.HVTransformerBlock.registerCapabilities(event);
         com.nick.industrialcraft.content.block.cable.BaseCableBlock.registerCapabilities(event);
 
         // Register energy capabilities for electric items (IElectricItem)

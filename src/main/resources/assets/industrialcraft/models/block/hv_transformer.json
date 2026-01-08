@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "industrialcraft:block/hv_transformer_sides",
+    "down": "industrialcraft:block/hv_transformer_sides",
+    "up": "industrialcraft:block/hv_transformer_sides",
+    "north": "industrialcraft:block/hv_transformer_front",
+    "south": "industrialcraft:block/hv_transformer_sides",
+    "west": "industrialcraft:block/hv_transformer_sides",
+    "east": "industrialcraft:block/hv_transformer_sides"
+  }
+}

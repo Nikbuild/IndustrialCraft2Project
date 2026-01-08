@@ -25,6 +25,8 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import com.nick.industrialcraft.registry.ModBlockEntity;
 import com.nick.industrialcraft.registry.ModItems;
 import com.nick.industrialcraft.registry.ModDataComponents;
+import com.nick.industrialcraft.registry.ModSounds;
+import net.minecraft.sounds.SoundSource;
 import com.nick.industrialcraft.api.energy.EnergyTier;
 import com.nick.industrialcraft.api.energy.IEnergyTier;
 import com.nick.industrialcraft.api.wrench.IWrenchable;
@@ -163,6 +165,9 @@ public class MaceratorBlockEntity extends BlockEntity implements MenuProvider, I
     private static final int MAX_ENERGY = 832;             // 800 + 32 buffer
     private static final int ENERGY_PER_OPERATION = 800;   // 2 EU/t * 400 ticks = 800 EU (5 ores per coal)
     private static final int MAX_INPUT = 32;               // LV tier max input
+    private static final int SOUND_INTERVAL = 25;          // Play sound every 25 ticks (1.25 seconds)
+
+    private int soundTimer = 0;
 
     private final IEnergyStorage energyStorage = new IEnergyStorage() {
         @Override
@@ -352,6 +357,13 @@ public class MaceratorBlockEntity extends BlockEntity implements MenuProvider, I
                 be.powered = true;
                 needsUpdate = true;
 
+                // Play operation sound periodically
+                be.soundTimer++;
+                if (be.soundTimer >= SOUND_INTERVAL) {
+                    level.playSound(null, pos, ModSounds.MACERATOR.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
+                    be.soundTimer = 0;
+                }
+
                 // Complete the operation
                 if (be.progress >= MAX_PROGRESS) {
                     be.macerateItem(input);
@@ -361,10 +373,12 @@ public class MaceratorBlockEntity extends BlockEntity implements MenuProvider, I
                 }
             } else {
                 be.powered = false;
+                be.soundTimer = 0;
             }
         } else {
             be.progress = 0;
             be.powered = false;
+            be.soundTimer = 0;
         }
 
         // Copy accumulated energy to last tick for GUI display

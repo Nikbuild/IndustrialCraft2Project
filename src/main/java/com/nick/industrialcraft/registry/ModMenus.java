@@ -12,6 +12,8 @@ import com.nick.industrialcraft.content.block.machine.InductionFurnaceMenu;
 import com.nick.industrialcraft.content.block.machine.CanningMachineMenu;
 import com.nick.industrialcraft.content.block.machine.IronFurnaceMenu;
 import com.nick.industrialcraft.content.block.storage.BatBoxMenu;
+import com.nick.industrialcraft.content.block.storage.MFEMenu;
+import com.nick.industrialcraft.content.block.storage.MFSUMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
@@ -77,6 +79,18 @@ public final class ModMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<BatBoxMenu>> BATBOX =
             MENUS.register("batbox", () ->
                     IMenuTypeExtension.create((id, inv, buf) -> new BatBoxMenu(id, inv, buf))
+            );
+
+    // MFE Menu
+    public static final DeferredHolder<MenuType<?>, MenuType<MFEMenu>> MFE =
+            MENUS.register("mfe", () ->
+                    IMenuTypeExtension.create((id, inv, buf) -> new MFEMenu(id, inv, buf))
+            );
+
+    // MFSU Menu
+    public static final DeferredHolder<MenuType<?>, MenuType<MFSUMenu>> MFSU =
+            MENUS.register("mfsu", () ->
+                    IMenuTypeExtension.create((id, inv, buf) -> new MFSUMenu(id, inv, buf))
             );
 
     // Canning Machine Menu
